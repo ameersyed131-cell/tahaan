@@ -1,0 +1,374 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Tahaan Foods Private Limited — Premium Food Import & Export</title>
+<meta name="description" content="Tahaan Foods Private Limited, founded by Syed Ameer Hussain, delivers premium spices, grains, fresh produce and more to global markets through trusted import and export services." />
+<link rel="icon" type="image/png" href="https://media.base44.com/images/public/6a4e5de5f7403fbafbc3fde5/9491c35a4_TAHAAN_FOODS_PRIVATE_LIMITED__1_-removebg-preview.png" />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  theme: { extend: {
+    colors: { brand: { orange:'#E8720C', gold:'#E6A817', green:'#1B7A3D', greenDark:'#0F5228', cream:'#FCF6E9', sand:'#F7E9C6' } },
+    fontFamily: { heading:['Fraunces','serif'], body:['Manrope','sans-serif'] }
+  }}
+}
+</script>
+<style>
+  body{font-family:'Manrope',sans-serif;}
+  .font-heading{font-family:'Fraunces',serif;}
+  .bg-noise{background-image:radial-gradient(circle at 1px 1px,rgba(0,0,0,.04) 1px,transparent 0);background-size:22px 22px;}
+  .text-gradient-brand{background:linear-gradient(100deg,#E8720C 0%,#E6A817 45%,#1B7A3D 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
+  ::selection{background:#E8720C;color:#fff;}
+  ::-webkit-scrollbar{width:10px;}::-webkit-scrollbar-track{background:#fff;}::-webkit-scrollbar-thumb{background:#E6A817;border-radius:10px;}::-webkit-scrollbar-thumb:hover{background:#E8720C;}
+  #app-loader{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#0F5228 0%,#1B7A3D 100%);animation:lfw 4.2s forwards}
+  .ll{display:flex;align-items:center;gap:24px;animation:pan 4.2s forwards}
+  .lmed{width:104px;height:104px;border-radius:50%;background:#FCF6E9;display:flex;align-items:center;justify-content:center;box-shadow:0 14px 44px rgba(0,0,0,.30);opacity:0;transform:scale(.7);animation:popin .7s .2s forwards}
+  .llogo{width:80px;height:80px}
+  .ltxt{display:flex;flex-direction:column;opacity:0;transform:translateX(30px);animation:slidein .5s .9s forwards}
+  .lname{font-family:'Fraunces',serif;letter-spacing:.3em;font-size:22px;color:#fff;font-weight:700;white-space:nowrap}
+  .lsub{font-family:'Manrope',sans-serif;letter-spacing:.35em;font-size:10px;color:#F2B93B;margin-top:6px;opacity:0;animation:fade .4s 1.25s forwards}
+  @keyframes popin{to{opacity:1;transform:scale(1)}}
+  @keyframes fade{to{opacity:1}}
+  @keyframes slidein{to{opacity:1;transform:translateX(0)}}
+  @keyframes pan{0%,52%{transform:translateX(0)}100%{transform:translateX(-34px)}}
+  @keyframes lfw{0%,82%{opacity:1;visibility:visible}100%{opacity:0;visibility:hidden}}
+  @media (prefers-reduced-motion:reduce){#app-loader{animation:lfw 1.2s forwards}.ll,.lmed,.ltxt,.lsub{animation:none;opacity:1;transform:none}.lmed{transform:scale(1)}}
+  .leaflet-container{background:#0a1f14;}
+</style>
+<script type="importmap">
+{ "imports": {
+  "react":"https://esm.sh/react@18.3.1",
+  "react/jsx-runtime":"https://esm.sh/react@18.3.1/jsx-runtime",
+  "react-dom":"https://esm.sh/react-dom@18.3.1",
+  "react-dom/client":"https://esm.sh/react-dom@18.3.1/client",
+  "react-router-dom":"https://esm.sh/react-router-dom@6.26.2?deps=react@18.3.1,react-dom@18.3.1",
+  "framer-motion":"https://esm.sh/framer-motion@11.16.4?deps=react@18.3.1,react-dom@18.3.1",
+  "leaflet":"https://esm.sh/leaflet@1.9.4",
+  "lucide-react":"https://esm.sh/lucide-react@0.475.0?deps=react@18.3.1"
+}}
+</script>
+</head>
+<body>
+<div id="app-loader" aria-hidden="true">
+  <div class="ll">
+    <div class="lmed"><img class="llogo" src="https://media.base44.com/images/public/6a4e5de5f7403fbafbc3fde5/9491c35a4_TAHAAN_FOODS_PRIVATE_LIMITED__1_-removebg-preview.png" alt="Tahaan Foods logo" /></div>
+    <div class="ltxt"><span class="lname">TAHAAN FOODS</span><span class="lsub">PRIVATE LIMITED</span></div>
+  </div>
+</div>
+<div id="root"></div>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script type="text/babel" data-type="module" data-presets="react">
+import React, { useState, useEffect, useRef, useMemo } from "react";
+import { createRoot } from "react-dom/client";
+import { HashRouter, Routes, Route, Link, useLocation } from "react-router-dom";
+import { motion, AnimatePresence, useScroll, useTransform, useInView, animate } from "framer-motion";
+import { Menu, X, Mail, Phone, MapPin, Linkedin, Instagram, Facebook, ArrowRight, Leaf, ShieldCheck, Ship, Quote, CheckCircle2, AlertCircle, Check, PackageCheck, Globe, Truck, FileCheck, Boxes, FileText, Target, Eye, Heart, Award, Handshake, Sprout, Send, ChevronDown } from "lucide-react";
+import L from "leaflet";
+
+const B = "https://media.base44.com/images/public/6a4e5de5f7403fbafbc3fde5/";
+const LOGO = B + "9491c35a4_TAHAAN_FOODS_PRIVATE_LIMITED__1_-removebg-preview.png";
+const FOUNDER = B + "1616465a7_image.png";
+const PX = (id) => `https://images.pexels.com/photos/${id}/pexels-photo-${id}.jpeg?auto=compress&cs=tinysrgb&w=800`;
+const SHIPS = [B+"1f4ed1d0b_generated_image.png", B+"caae424f4_generated_image.png", B+"ab5161e3d_generated_image.png"];
+const GLOBAL = B+"5c203f78f_generated_a46b2c9c.png";
+const CHILLI = B+"62329d686_1000016115_cd3bd91bf9398cd3200191f48d0f5f83-18_1_20256_01_16pm.webp";
+const CORN = B+"1156d31ed_1000016112_b42f1eec80534c26885cbc6301e8dd3e-18_1_20256_01_15pm.webp";
+const TOMATO = B+"23a62f3c8_1000016116_88a3884cb16561e51786b5837cc4ec19-18_1_20256_05_38pm.webp";
+const PEANUT = B+"ed8e81db0_1000016120_57a9937d75f5299647ac2c9af65070e9-18_1_20256_05_39pm.webp";
+const LENTIL = B+"8a76c331d_1000016114_75aa58aa91f7cadc0866229cce939abc-18_1_20256_01_16pm.webp";
+const POTATO = B+"b53edaa4a_1000016117_55a3ac67bfde2fedbd8d74707b74f815-18_1_20256_05_38pm.webp";
+const CARROT = B+"79b2d3330_1000016119_c6183ba9e3557d5aa6c2d54783d39497-18_1_20256_05_39pm.webp";
+const APPLE = B+"baaf9a70b_1000016121_1c13939d2e956fdd76ba53118b40f62c-18_1_20256_07_04pm.webp";
+const GRAPE = B+"3eff8c2f7_1000016122_71e0027584eb3d330af88bc3add81253-18_1_20256_07_05pm.webp";
+const BANANA = B+"7820d798b_1000016123_455e9d42a2a957265f2403abb1be05aa-18_1_20256_07_05pm.webp";
+const FIELD = "https://images.pexels.com/photos/12702575/pexels-photo-12702575.jpeg?auto=compress&cs=tinysrgb&w=900";
+
+function Reveal({ children, delay = 0, y = 40, className = "" }) {
+  return <motion.div className={className} initial={{ opacity:0, y }} whileInView={{ opacity:1, y:0 }} viewport={{ once:true, margin:"-80px" }} transition={{ duration:0.8, delay, ease:[0.16,1,0.3,1] }}>{children}</motion.div>;
+}
+function AnimatedCounter({ value = 0, suffix = "", duration = 2 }) {
+  const ref = useRef(null);
+  const inView = useInView(ref, { once:true, margin:"-60px" });
+  const [display, setDisplay] = useState(0);
+  useEffect(() => { if(!inView) return; const c = animate(0, value, { duration, ease:[0.16,1,0.3,1], onUpdate:v=>setDisplay(Math.round(v)) }); return ()=>c.stop(); }, [inView, value, duration]);
+  return <span ref={ref}>{display}{suffix}</span>;
+}
+function Marquee({ items = [] }) {
+  const loop = [...items, ...items];
+  return <div className="overflow-hidden"><motion.div className="flex gap-10 w-max" animate={{ x:["0%","-50%"] }} transition={{ duration:8, repeat:Infinity, ease:"linear" }}>{loop.map((t,i)=><div key={i} className="flex items-center gap-10 shrink-0"><span className="font-heading text-2xl md:text-3xl text-brand-greenDark/30">{t}</span><span className="text-brand-gold text-xl">✦</span></div>)}</motion.div></div>;
+}
+function FlagsCarousel() {
+  const flags = [{flag:"🇦🇪",name:"UAE"},{flag:"🇸🇦",name:"Saudi Arabia"},{flag:"🇶🇦",name:"Qatar"},{flag:"🇴🇲",name:"Oman"},{flag:"🇸🇬",name:"Singapore"},{flag:"🇲🇾",name:"Malaysia"},{flag:"🇯🇵",name:"Japan"},{flag:"🇻🇳",name:"Vietnam"},{flag:"🇬🇧",name:"United Kingdom"},{flag:"🇩🇪",name:"Germany"},{flag:"🇳🇱",name:"Netherlands"},{flag:"🇫🇷",name:"France"},{flag:"🇰🇪",name:"Kenya"},{flag:"🇳🇬",name:"Nigeria"},{flag:"🇿🇦",name:"South Africa"},{flag:"🇪🇬",name:"Egypt"},{flag:"🇺🇸",name:"United States"},{flag:"🇨🇦",name:"Canada"},{flag:"🇲🇽",name:"Mexico"},{flag:"🇦🇺",name:"Australia"},{flag:"🇳🇿",name:"New Zealand"}];
+  const loop = [...flags, ...flags];
+  return <div className="overflow-hidden"><motion.div className="flex gap-5 w-max" animate={{ x:["0%","-50%"] }} transition={{ duration:32, repeat:Infinity, ease:"linear" }}>{loop.map((f,i)=><div key={i} className="flex items-center gap-3 bg-white border border-brand-sand rounded-2xl px-6 py-3 shrink-0 shadow-sm"><span className="text-3xl leading-none">{f.flag}</span><span className="font-heading text-lg text-brand-greenDark">{f.name}</span></div>)}</motion.div></div>;
+}
+function ImageCarousel({ images = [], interval = 2200, className = "" }) {
+  const [idx, setIdx] = useState(0);
+  useEffect(() => { if(images.length<=1) return; const t = setInterval(()=>setIdx(p=>(p+1)%images.length), interval); return ()=>clearInterval(t); }, [images.length, interval]);
+  if(!images.length) return null; const cur = images[idx];
+  return <div className={"relative w-full aspect-[4/3] rounded-[2rem] overflow-hidden shadow-2xl " + className}>
+    <AnimatePresence><motion.img key={idx} src={cur.src} alt={cur.label} initial={{opacity:0,scale:1.06}} animate={{opacity:1,scale:1}} exit={{opacity:0}} transition={{duration:0.7,ease:"easeInOut"}} className="absolute inset-0 w-full h-full object-cover" /></AnimatePresence>
+    <div className="absolute bottom-0 left-0 right-0 p-5 bg-gradient-to-t from-brand-greenDark/85 to-transparent"><span className="font-heading text-2xl text-white">{cur.label}</span></div>
+    {images.length>1 && <div className="absolute top-4 right-4 flex gap-1.5">{images.map((_,i)=><span key={i} className={"h-1.5 rounded-full transition-all duration-300 " + (i===idx?"w-6 bg-brand-gold":"w-1.5 bg-white/50")} />)}</div>}
+  </div>;
+}
+function ProductCarousel() {
+  const items = [{title:"Spices & Seasonings",img:CHILLI,desc:"Aromatic, hand-selected spices sourced from the finest growing regions."},{title:"Rice & Grains",img:CORN,desc:"Premium basmati and wholesome grains, cleaned and graded to perfection."},{title:"Fresh Produce",img:TOMATO,desc:"Farm-fresh fruits and vegetables handled with care from harvest to port."},{title:"Nuts & Pulses",img:LENTIL,desc:"Protein-rich pulses and premium nuts, carefully sorted and packed."}];
+  const [idx, setIdx] = useState(0);
+  useEffect(() => { const t = setInterval(()=>setIdx(p=>(p+1)%items.length), 4000); return ()=>clearInterval(t); }, []);
+  const it = items[idx];
+  return <div className="relative rounded-[2rem] overflow-hidden shadow-2xl aspect-[16/10] md:aspect-[21/9]">
+    <AnimatePresence mode="wait"><motion.div key={idx} initial={{opacity:0,scale:1.06}} animate={{opacity:1,scale:1}} exit={{opacity:0}} transition={{duration:0.8,ease:"easeInOut"}} className="absolute inset-0"><img src={it.img} alt={it.title} className="w-full h-full object-cover" /><div className="absolute inset-0 bg-gradient-to-t from-brand-greenDark/90 via-brand-greenDark/40 to-transparent" /><div className="absolute bottom-0 left-0 right-0 p-8 md:p-14"><h3 className="font-heading text-3xl md:text-5xl text-white">{it.title}</h3><p className="text-white/85 mt-3 max-w-xl">{it.desc}</p></div></motion.div></AnimatePresence>
+    <div className="absolute top-6 right-6 flex gap-2 z-10">{items.map((_,i)=><button key={i} onClick={()=>setIdx(i)} className={"h-2 rounded-full transition-all duration-300 " + (i===idx?"w-8 bg-brand-gold":"w-2 bg-white/50")} />)}</div>
+  </div>;
+}
+function Testimonials() {
+  const testimonials = [{quote:"Tahaan Foods has been our trusted partner for premium basmati rice for over four years. Their consistency and reliability are unmatched.",name:"Ahmed Al Mansoori",role:"Procurement Head, Al Mansoori Trading LLC · UAE"},{quote:"From sourcing rare spices to seamless logistics, Tahaan Foods delivered beyond our expectations every single time.",name:"Li Wei",role:"Import Director, Wei & Sons Foods · Singapore"},{quote:"Their ability to source any agri product we need, from anywhere, makes them an indispensable part of our supply chain.",name:"Sarah O'Brien",role:"Operations Manager, GreenHarvest Imports · UK"},{quote:"Professional, transparent and always on time. Tahaan Foods sets the benchmark for agri export from India.",name:"David Carter",role:"Supply Chain Lead, Carter Agri Co. · USA"}];
+  const [idx, setIdx] = useState(0);
+  useEffect(() => { const t = setInterval(()=>setIdx(p=>(p+1)%testimonials.length), 5500); return ()=>clearInterval(t); }, []);
+  const t = testimonials[idx];
+  return <section className="py-24 bg-brand-cream bg-noise"><div className="max-w-4xl mx-auto px-6 text-center">
+    <Reveal className="mb-10"><span className="text-brand-orange text-sm font-semibold tracking-[0.2em] uppercase">Testimonials</span><h2 className="font-heading text-4xl md:text-5xl font-semibold text-brand-greenDark mt-4">Trusted by partners worldwide</h2></Reveal>
+    <div className="relative min-h-[240px] flex items-center justify-center"><AnimatePresence mode="wait"><motion.div key={idx} initial={{opacity:0,y:20}} animate={{opacity:1,y:0}} exit={{opacity:0,y:-20}} transition={{duration:0.5}}><Quote className="text-brand-gold mx-auto mb-5" size={40} /><p className="font-heading text-2xl md:text-3xl text-brand-greenDark leading-relaxed">“{t.quote}”</p><div className="mt-6"><div className="font-semibold text-neutral-800">{t.name}</div><div className="text-sm text-neutral-500 mt-1">{t.role}</div></div></motion.div></AnimatePresence></div>
+    <div className="flex justify-center gap-2 mt-8">{testimonials.map((_,i)=><button key={i} onClick={()=>setIdx(i)} className={"h-2 rounded-full transition-all duration-300 " + (i===idx?"w-8 bg-brand-orange":"w-2 bg-brand-sand")} />)}</div>
+  </div></section>;
+}
+function FAQ() {
+  const faqs = [{q:"What products does Tahaan Foods trade in?",a:"We specialise in the import and export of agricultural products — spices and seasonings, rice and grains, fresh produce, pulses, nuts and more. If it's an agri product, we can source and supply it."},{q:"Can you source a product we can't find locally?",a:"Yes. Our global sourcing network lets us locate and supply virtually any agricultural product from across India or any other part of the world. Share your requirement and we'll take care of the rest."},{q:"Do you handle logistics and shipping?",a:"We do. We provide end-to-end logistics and shipping support so your goods reach their destination safely and on time, whether by sea, air or land."},{q:"Which countries do you serve?",a:"We currently serve 25+ countries across the Middle East, Asia Pacific, Europe, Africa, North America and Oceania — and we're expanding steadily."},{q:"How do I get a quote?",a:"Visit our Contact page, share your requirements, and our team will respond with a tailored proposal within one business day."},{q:"What are your business hours?",a:"We're available Monday to Saturday, 9:00 AM to 7:00 PM IST."}];
+  const [open, setOpen] = useState(null);
+  return <section className="py-24 max-w-3xl mx-auto px-6">
+    <Reveal className="text-center mb-12"><span className="text-brand-orange text-sm font-semibold tracking-[0.2em] uppercase">FAQ</span><h2 className="font-heading text-4xl md:text-5xl font-semibold text-brand-greenDark mt-4">Questions, answered</h2><p className="text-neutral-600 mt-4">Everything you need to know about working with Tahaan Foods.</p></Reveal>
+    <div className="w-full">{faqs.map((f,i)=><div key={i} className="border-b border-brand-sand"><button onClick={()=>setOpen(open===i?null:i)} className="w-full flex items-center justify-between py-5 text-left font-heading text-lg text-brand-greenDark">{f.q}<ChevronDown className={"transition-transform shrink-0 ml-4 " + (open===i?"rotate-180":"")} size={20} /></button>{open===i && <div className="pb-5 text-neutral-600 leading-relaxed">{f.a}</div>}</div>)}</div>
+  </section>;
+}
+function PageHero({ eyebrow, title, subtitle }) {
+  return <section className="relative pt-40 pb-20 md:pt-48 md:pb-28 overflow-hidden bg-brand-cream bg-noise">
+    <div className="absolute top-20 right-10 w-72 h-72 bg-brand-orange/15 rounded-full blur-3xl" /><div className="absolute bottom-0 left-10 w-72 h-72 bg-brand-green/15 rounded-full blur-3xl" />
+    <div className="relative max-w-5xl mx-auto px-6 text-center">
+      <motion.span initial={{opacity:0,y:20}} animate={{opacity:1,y:0}} transition={{duration:0.6}} className="text-brand-orange text-sm font-semibold tracking-[0.25em] uppercase">{eyebrow}</motion.span>
+      <motion.h1 initial={{opacity:0,y:30}} animate={{opacity:1,y:0}} transition={{duration:0.8,delay:0.1,ease:[0.16,1,0.3,1]}} className="font-heading text-5xl md:text-7xl font-semibold text-brand-greenDark mt-4 leading-[1.05]">{title}</motion.h1>
+      {subtitle && <motion.p initial={{opacity:0}} animate={{opacity:1}} transition={{duration:0.8,delay:0.3}} className="text-neutral-600 text-lg mt-6 max-w-2xl mx-auto leading-relaxed">{subtitle}</motion.p>}
+    </div>
+  </section>;
+}
+function CTASection() {
+  return <section className="py-24 px-6"><div className="max-w-6xl mx-auto relative rounded-[2.5rem] overflow-hidden bg-gradient-to-br from-brand-orange via-brand-gold to-brand-orange p-12 md:p-20 text-center">
+    <div className="absolute top-0 left-0 w-72 h-72 bg-white/20 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2" /><div className="absolute bottom-0 right-0 w-72 h-72 bg-brand-greenDark/20 rounded-full blur-3xl translate-x-1/2 translate-y-1/2" />
+    <motion.div initial={{opacity:0,y:30}} whileInView={{opacity:1,y:0}} viewport={{once:true}} transition={{duration:0.8}} className="relative">
+      <h2 className="font-heading text-4xl md:text-5xl font-semibold text-white leading-tight max-w-2xl mx-auto">Ready to source with confidence?</h2>
+      <p className="text-white/90 text-lg mt-5 max-w-xl mx-auto">Let's discuss how Tahaan Foods can power your supply chain with premium quality goods.</p>
+      <Link to="/contact" className="inline-flex items-center gap-2 mt-9 px-9 py-4 rounded-full bg-brand-greenDark text-white font-semibold hover:bg-white hover:text-brand-greenDark transition-all duration-300 shadow-xl">Start a Conversation <ArrowRight size={18} /></Link>
+    </motion.div>
+  </div></section>;
+}
+
+const HOME = [13.09, 80.29];
+const countries = [
+  {name:"UAE",flag:"🇦🇪",port:"Jebel Ali, Dubai",coord:[25.01,55.07]},{name:"Saudi Arabia",flag:"🇸🇦",port:"Jeddah",coord:[21.54,39.19]},{name:"Qatar",flag:"🇶🇦",port:"Doha",coord:[25.29,51.53]},{name:"Oman",flag:"🇴🇲",port:"Salalah",coord:[17.02,54.09]},
+  {name:"Singapore",flag:"🇸🇬",port:"Singapore",coord:[1.26,103.83]},{name:"Malaysia",flag:"🇲🇾",port:"Port Klang",coord:[3.04,101.39]},{name:"Japan",flag:"🇯🇵",port:"Tokyo",coord:[35.68,139.69]},{name:"Vietnam",flag:"🇻🇳",port:"Ho Chi Minh City",coord:[10.77,106.7]},
+  {name:"United Kingdom",flag:"🇬🇧",port:"Felixstowe",coord:[51.96,1.35]},{name:"Germany",flag:"🇩🇪",port:"Hamburg",coord:[53.55,9.99]},{name:"Netherlands",flag:"🇳🇱",port:"Rotterdam",coord:[51.95,4.14]},{name:"France",flag:"🇫🇷",port:"Le Havre",coord:[49.49,0.13]},
+  {name:"Kenya",flag:"🇰🇪",port:"Mombasa",coord:[-4.04,39.66]},{name:"Nigeria",flag:"🇳🇬",port:"Lagos",coord:[6.45,3.4]},{name:"South Africa",flag:"🇿🇦",port:"Durban",coord:[-29.86,31.03]},{name:"Egypt",flag:"🇪🇬",port:"Alexandria",coord:[31.2,29.92]},
+  {name:"United States",flag:"🇺🇸",port:"New York",coord:[40.71,-74.01]},{name:"Canada",flag:"🇨🇦",port:"Vancouver",coord:[49.28,-123.12]},{name:"Mexico",flag:"🇲🇽",port:"Manzanillo",coord:[19.05,-104.32]},{name:"Australia",flag:"🇦🇺",port:"Sydney",coord:[-33.87,151.21]},{name:"New Zealand",flag:"🇳🇿",port:"Auckland",coord:[-36.85,174.76]}
+];
+function arc(from, to, bend = 0.25) {
+  const [lat1,lng1] = from, [lat2,lng2] = to; const mx=(lat1+lat2)/2, my=(lng1+lng2)/2, dx=lat2-lat1, dy=lng2-lng1, d=Math.hypot(dx,dy)||1, cx=mx+(-dy/d)*d*bend, cy=my+(dx/d)*d*bend, pts=[];
+  for(let t=0;t<=1;t+=1/30){const lat=(1-t)*(1-t)*lat1+2*(1-t)*t*cx+t*t*lat2, lng=(1-t)*(1-t)*lng1+2*(1-t)*t*cy+t*t*lng2; pts.push([lat,lng]);}
+  return pts;
+}
+function WorldMap() {
+  const ref = useRef(null); const routeRef = useRef(null); const [active, setActive] = useState(null);
+  useEffect(() => {
+    if(!ref.current || ref.current._map) return;
+    const map = L.map(ref.current, { center:[20,45], zoom:2, minZoom:2, maxZoom:5, scrollWheelZoom:false, worldCopyJump:true });
+    ref.current._map = map;
+    L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", { attribution:"&copy; OpenStreetMap &copy; CARTO" }).addTo(map);
+    const homeIcon = L.divIcon({ className:"", html:`<div style="display:flex;flex-direction:column;align-items:center"><div style="width:16px;height:16px;border-radius:50%;background:#E6A817;border:3px solid #0F5228;box-shadow:0 0 0 5px rgba(230,168,23,.3)"></div><span style="margin-top:3px;font-size:10px;font-weight:700;color:#0F5228;background:#fff;padding:1px 6px;border-radius:6px;white-space:nowrap">India</span></div>`, iconSize:[20,24], iconAnchor:[10,10] });
+    L.marker(HOME, { icon: homeIcon }).addTo(map);
+    countries.forEach((c, i) => {
+      const ic = L.divIcon({ className:"", html:`<div style="display:flex;flex-direction:column;align-items:center;cursor:pointer"><div style="font-size:22px;filter:drop-shadow(0 1px 2px rgba(0,0,0,.5))">${c.flag}</div><span style="margin-top:1px;font-size:9px;font-weight:600;color:#fff;background:rgba(15,82,40,.82);padding:1px 5px;border-radius:5px;white-space:nowrap">${c.name}</span></div>`, iconSize:[44,40], iconAnchor:[22,20] });
+      const m = L.marker(c.coord, { icon: ic }).addTo(map);
+      m.on("mouseover", ()=>setActive(i)); m.on("mouseout", ()=>setActive(null)); m.on("click", ()=>setActive(a=>a===i?null:i));
+    });
+    map.fitBounds([HOME, ...countries.map(c=>c.coord)], { padding:[50,50] });
+    setTimeout(()=>map.invalidateSize(), 200);
+    return () => { try{map.remove();}catch(e){} ref.current._map = null; };
+  }, []);
+  useEffect(() => {
+    const map = ref.current && ref.current._map; if(!map) return;
+    if(routeRef.current){ map.removeLayer(routeRef.current); routeRef.current = null; }
+    if(active !== null){ routeRef.current = L.polyline(arc(HOME, countries[active].coord, 0.25), { color:"#E8720C", weight:3, opacity:0.95, dashArray:"8 10" }).addTo(map); }
+  }, [active]);
+  return <div className="relative rounded-[2rem] overflow-hidden shadow-2xl border border-brand-sand">
+    <div ref={ref} style={{ height:"70vh", minHeight:480 }} />
+    <div className="absolute top-4 left-4 z-[1000] bg-white/92 backdrop-blur rounded-xl px-4 py-3 shadow-lg max-w-[280px] pointer-events-none">
+      <p className="text-xs text-neutral-600 leading-relaxed">{active !== null ? <>Sea route from <strong className="text-brand-greenDark">Chennai, India</strong> → <strong className="text-brand-orange">{countries[active].port}, {countries[active].name}</strong></> : <>Hover any country to trace its <strong className="text-brand-orange">sea route</strong> from southern India.</>}</p>
+    </div>
+  </div>;
+}
+
+const navlinks = [{name:"Home",path:"/"},{name:"About",path:"/about"},{name:"Products",path:"/products"},{name:"Services",path:"/services"},{name:"Global Reach",path:"/global-reach"},{name:"Contact",path:"/contact"}];
+function Navbar() {
+  const [scrolled, setScrolled] = useState(false); const [open, setOpen] = useState(false); const loc = useLocation();
+  useEffect(() => { const f=()=>setScrolled(window.scrollY>30); window.addEventListener("scroll",f); return ()=>window.removeEventListener("scroll",f); }, []);
+  useEffect(()=>setOpen(false), [loc.pathname]);
+  return <motion.header initial={{y:-80}} animate={{y:0}} transition={{duration:0.7,ease:[0.16,1,0.3,1]}} className={"fixed top-0 left-0 right-0 z-50 transition-all duration-500 " + (scrolled?"bg-white/85 backdrop-blur-xl shadow-[0_8px_40px_rgba(0,0,0,0.06)] py-3":"bg-transparent py-5")}>
+    <nav className="max-w-7xl mx-auto px-6 flex items-center justify-between">
+      <Link to="/" className="flex items-center gap-3 group"><img src={LOGO} alt="Tahaan Foods logo" className="w-11 h-11 rounded-full object-cover ring-2 ring-brand-gold/40 transition-transform group-hover:rotate-12 duration-500" /><div className="leading-tight"><span className="block font-heading font-semibold text-lg text-brand-greenDark">Tahaan Foods</span><span className="block text-[10px] tracking-[0.25em] text-brand-orange uppercase">Private Limited</span></div></Link>
+      <div className="hidden lg:flex items-center gap-8">{navlinks.map(l=><Link key={l.path} to={l.path} className="relative text-sm font-medium text-neutral-700 hover:text-brand-orange transition-colors group">{l.name}<span className={"absolute -bottom-1.5 left-0 h-0.5 bg-brand-orange transition-all duration-300 " + (loc.pathname===l.path?"w-full":"w-0 group-hover:w-full")} /></Link>)}</div>
+      <Link to="/contact" className="hidden lg:inline-flex items-center px-6 py-2.5 rounded-full bg-brand-greenDark text-white text-sm font-semibold hover:bg-brand-orange transition-colors duration-300">Get a Quote</Link>
+      <button onClick={()=>setOpen(!open)} className="lg:hidden text-brand-greenDark p-2">{open?<X size={26}/>:<Menu size={26}/>}</button>
+    </nav>
+    <AnimatePresence>{open && <motion.div initial={{opacity:0,height:0}} animate={{opacity:1,height:"auto"}} exit={{opacity:0,height:0}} className="lg:hidden bg-white/95 backdrop-blur-xl overflow-hidden"><div className="px-6 py-6 flex flex-col gap-4">{navlinks.map(l=><Link key={l.path} to={l.path} className="text-base font-medium text-neutral-800 hover:text-brand-orange">{l.name}</Link>)}<Link to="/contact" className="mt-2 inline-flex justify-center px-6 py-3 rounded-full bg-brand-greenDark text-white font-semibold">Get a Quote</Link></div></motion.div>}</AnimatePresence>
+  </motion.header>;
+}
+function Footer() {
+  return <footer className="bg-brand-greenDark text-white relative overflow-hidden">
+    <div className="absolute -top-24 -right-24 w-96 h-96 rounded-full bg-brand-orange/20 blur-3xl" /><div className="absolute -bottom-24 -left-24 w-96 h-96 rounded-full bg-brand-gold/20 blur-3xl" />
+    <div className="relative max-w-7xl mx-auto px-6 py-14"><div className="grid md:grid-cols-4 gap-10">
+      <div className="md:col-span-1"><div className="flex items-center gap-3 mb-4"><img src={LOGO} alt="Tahaan Foods" className="w-12 h-12 rounded-full object-cover ring-2 ring-brand-gold/40" /><span className="font-heading font-semibold text-xl">Tahaan Foods</span></div><p className="text-white/70 text-sm leading-relaxed">Bridging global markets with premium agricultural products through trusted import &amp; export excellence.</p><div className="flex gap-3 mt-5">{[Linkedin,Instagram,Facebook].map((Icon,i)=><a key={i} href="#" className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-brand-orange transition-colors"><Icon size={18} /></a>)}</div></div>
+      <div className="hidden md:block"><h4 className="font-heading text-lg mb-5 text-brand-gold">Explore</h4><ul className="space-y-3 text-sm text-white/75">{[["Home","/"],["About","/about"],["Products","/products"],["Services","/services"],["Global Reach","/global-reach"]].map(([n,p])=><li key={p}><Link to={p} className="hover:text-brand-orange transition-colors">{n}</Link></li>)}</ul></div>
+      <div className="hidden md:block"><h4 className="font-heading text-lg mb-5 text-brand-gold">Products</h4><ul className="space-y-3 text-sm text-white/75">{["Spices & Seasonings","Rice & Grains","Fresh Produce","Nuts & Pulses","Dry Fruits"].map(n=><li key={n}><Link to="/products" className="hover:text-brand-orange transition-colors">{n}</Link></li>)}</ul></div>
+      <div><h4 className="font-heading text-lg mb-5 text-brand-gold">Contact</h4><ul className="space-y-4 text-sm text-white/75"><li className="flex items-start gap-3"><MapPin size={18} className="text-brand-orange mt-0.5 shrink-0" /> Hyderabad, Telangana, India</li><li className="flex items-center gap-3"><Phone size={18} className="text-brand-orange shrink-0" /> +91 90000 00000</li><li className="flex items-center gap-3"><Mail size={18} className="text-brand-orange shrink-0" /> info@tahanfoods.com</li></ul></div>
+    </div>
+    <div className="border-t border-white/10 mt-12 pt-8 flex flex-col md:flex-row justify-between gap-4 text-sm text-white/60"><p>© {new Date().getFullYear()} Tahaan Foods Private Limited. All rights reserved.</p><p>Developed by <a href="https://www.faizcodex.com" target="_blank" rel="noopener noreferrer" className="hover:text-brand-orange transition-colors">FaizCodex.com</a></p></div></div>
+  </footer>;
+}
+
+function Hero() {
+  const [idx, setIdx] = useState(0);
+  useEffect(() => { const t = setInterval(()=>setIdx(p=>(p+1)%SHIPS.length), 5000); return ()=>clearInterval(t); }, []);
+  return <section className="relative h-screen min-h-[640px] w-full overflow-hidden bg-brand-greenDark">
+    <AnimatePresence mode="sync"><motion.div key={idx} initial={{opacity:0,scale:1.12}} animate={{opacity:1,scale:1}} exit={{opacity:0}} transition={{duration:1.4,ease:"easeInOut"}} className="absolute inset-0"><img src={SHIPS[idx]} alt="Cargo vessel carrying containers across the ocean" className="w-full h-full object-cover" /></motion.div></AnimatePresence>
+    <div className="absolute inset-0 bg-gradient-to-b from-brand-greenDark/70 via-brand-greenDark/45 to-brand-greenDark/85" /><div className="absolute inset-0 bg-gradient-to-r from-brand-greenDark/70 to-transparent" />
+    <div className="relative h-full max-w-7xl mx-auto px-6 flex flex-col justify-center">
+      <motion.h1 initial={{opacity:0,y:40}} animate={{opacity:1,y:0}} transition={{duration:1,delay:0.45}} className="font-heading text-5xl md:text-7xl lg:text-8xl font-semibold text-white mt-6 max-w-4xl leading-[1.05]">Moving the world's harvest across <span className="text-brand-gold">oceans</span></motion.h1>
+      <motion.p initial={{opacity:0,y:40}} animate={{opacity:1,y:0}} transition={{duration:1,delay:0.6}} className="text-white/80 text-lg md:text-xl mt-6 max-w-2xl leading-relaxed">Premium import &amp; export of agricultural products — sourcing any agri product from across India and the world, delivered with seamless logistics to 25+ countries.</motion.p>
+      <motion.div initial={{opacity:0,y:40}} animate={{opacity:1,y:0}} transition={{duration:1,delay:0.75}} className="flex flex-wrap gap-4 mt-10"><Link to="/contact" className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-brand-orange text-white font-semibold hover:bg-white hover:text-brand-greenDark transition-colors duration-300">Get a Quote <ArrowRight size={18} /></Link><Link to="/products" className="inline-flex items-center gap-2 px-8 py-4 rounded-full border border-white/40 text-white font-semibold hover:bg-white/10 transition-colors duration-300">Explore Products</Link></motion.div>
+    </div>
+    <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-2 z-10">{SHIPS.map((_,i)=><button key={i} onClick={()=>setIdx(i)} className={"h-1.5 rounded-full transition-all duration-300 " + (i===idx?"w-10 bg-brand-gold":"w-3 bg-white/40")} />)}</div>
+  </section>;
+}
+function StatsBand() {
+  const stats = [{value:25,suffix:"+",label:"Countries Served"},{value:150,suffix:"+",label:"Product Varieties"},{value:15,suffix:"+",label:"Years of Trust"},{value:99,suffix:"%",label:"On-Time Delivery"}];
+  return <section className="relative -mt-12 z-10"><div className="max-w-6xl mx-auto px-6"><div className="bg-white rounded-3xl shadow-[0_20px_60px_rgba(15,82,40,0.12)] border border-brand-sand grid grid-cols-2 md:grid-cols-4 divide-x divide-brand-sand overflow-hidden">{stats.map((s,i)=><Reveal key={s.label} delay={i*0.08} className="py-8 text-center"><div className="font-heading text-4xl md:text-5xl font-semibold text-brand-greenDark"><AnimatedCounter value={s.value} suffix={s.suffix} /></div><div className="text-xs md:text-sm text-neutral-500 mt-2 tracking-wide uppercase">{s.label}</div></Reveal>)}</div></div></section>;
+}
+function Intro() {
+  const points = [{icon:Leaf,title:"Farm-Fresh Sourcing",desc:"Direct partnerships with trusted growers ensure natural, wholesome quality."},{icon:ShieldCheck,title:"Certified Quality",desc:"Rigorous checks and international compliance at every stage of the chain."},{icon:Ship,title:"Seamless Logistics",desc:"Reliable end-to-end shipping across sea, air and land routes worldwide."}];
+  return <section className="py-24 md:py-32 max-w-7xl mx-auto px-6"><div className="grid lg:grid-cols-2 gap-16 items-center">
+    <div><Reveal><span className="text-brand-orange text-sm font-semibold tracking-[0.2em] uppercase">Who We Are</span><h2 className="font-heading text-4xl md:text-5xl font-semibold text-brand-greenDark mt-4 leading-tight">A trusted name in global food trade</h2></Reveal>
+      <Reveal delay={0.1}><p className="text-neutral-600 text-lg leading-relaxed mt-6">Founded by <span className="text-brand-greenDark font-semibold">Syed Ameer Hussain</span>, Tahaan Foods Private Limited has grown into a dependable partner for importers and exporters worldwide. We take pride in sourcing responsibly, packaging meticulously, and delivering consistently.</p></Reveal>
+      <div className="mt-10 space-y-6">{points.map((p,i)=><Reveal key={p.title} delay={0.15+i*0.1}><div className="flex gap-5 group"><div className="w-12 h-12 rounded-2xl bg-brand-cream flex items-center justify-center shrink-0 group-hover:bg-brand-orange transition-colors duration-300"><p.icon className="text-brand-orange group-hover:text-white transition-colors duration-300" size={22} /></div><div><h3 className="font-heading text-xl text-brand-greenDark">{p.title}</h3><p className="text-neutral-600 mt-1">{p.desc}</p></div></div></Reveal>)}</div>
+      <Reveal delay={0.4}><Link to="/about" className="inline-flex items-center gap-2 mt-10 text-brand-greenDark font-semibold hover:text-brand-orange transition-colors">Learn our story <ArrowRight size={18} /></Link></Reveal>
+    </div>
+    <Reveal delay={0.2}><motion.div whileHover={{scale:1.02}} transition={{duration:0.5}} className="relative"><div className="absolute -inset-4 bg-gradient-to-tr from-brand-orange/20 via-brand-gold/20 to-brand-green/20 rounded-[2rem] blur-2xl" /><img src={FIELD} alt="Agricultural field at sunset — Tahaan Foods sourcing" className="relative rounded-[2rem] shadow-2xl w-full object-cover aspect-[4/3]" /><div className="absolute -bottom-6 -left-6 bg-white rounded-2xl shadow-xl p-6 hidden md:block"><div className="font-heading text-3xl text-gradient-brand font-semibold">15+</div><div className="text-sm text-neutral-600">Years of Trust</div></div></motion.div></Reveal>
+  </div></section>;
+}
+function ProductShowcase() {
+  const products = [{title:"Spices & Seasonings",img:CHILLI,desc:"Aromatic, hand-selected spices with bold, authentic flavour."},{title:"Rice & Grains",img:CORN,desc:"Premium basmati and wholesome grains, graded to perfection."},{title:"Fresh Produce",img:TOMATO,desc:"Farm-fresh fruits and vegetables handled with care."},{title:"Nuts & Pulses",img:PEANUT,desc:"Protein-rich pulses and premium nuts, sorted and packed."}];
+  return <section className="py-24 max-w-7xl mx-auto px-6"><Reveal className="text-center mb-14"><span className="text-brand-orange text-sm font-semibold tracking-[0.2em] uppercase">Our Catalogue</span><h2 className="font-heading text-4xl md:text-5xl font-semibold text-brand-greenDark mt-4">Premium products, global standards</h2><p className="text-neutral-600 max-w-2xl mx-auto mt-4">Hover any category to explore what we trade in — a curated selection of the finest agricultural goods, sourced and shipped worldwide.</p></Reveal>
+    <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">{products.map((p,i)=><Reveal key={p.title} delay={i*0.08}><Link to="/products" className="group block relative rounded-3xl overflow-hidden aspect-[3/4] shadow-lg"><img src={p.img} alt={p.title} className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" /><div className="absolute inset-0 bg-brand-greenDark/0 group-hover:bg-brand-greenDark/75 transition-colors duration-500" /><div className="absolute inset-0 flex flex-col items-center justify-center text-center px-6 opacity-0 group-hover:opacity-100 transition-opacity duration-500"><h3 className="font-heading text-2xl text-white mb-2">{p.title}</h3><p className="text-white/85 text-sm leading-relaxed">{p.desc}</p><span className="mt-4 text-brand-gold text-sm font-semibold tracking-wide">Explore →</span></div><div className="absolute bottom-0 left-0 right-0 p-5 bg-gradient-to-t from-brand-greenDark/80 to-transparent group-hover:opacity-0 transition-opacity duration-300"><h3 className="font-heading text-xl text-white">{p.title}</h3></div></Link></Reveal>)}</div>
+  </section>;
+}
+function GlobalBand() {
+  const ref = useRef(null); const { scrollYProgress } = useScroll({ target:ref, offset:["start end","end start"] }); const y = useTransform(scrollYProgress, [0,1], [-60,60]);
+  return <section ref={ref} className="relative h-[520px] flex items-center overflow-hidden"><motion.img style={{ y, scale:1.2 }} src={GLOBAL} alt="Global shipping" className="absolute inset-0 w-full h-full object-cover" /><div className="absolute inset-0 bg-brand-greenDark/70" /><div className="relative z-10 max-w-7xl mx-auto px-6 text-center w-full"><motion.h2 initial={{opacity:0,y:40}} whileInView={{opacity:1,y:0}} viewport={{once:true}} transition={{duration:0.9,ease:[0.16,1,0.3,1]}} className="font-heading text-4xl md:text-6xl font-semibold text-white leading-tight max-w-4xl mx-auto">From local farms to <span className="text-brand-gold italic">global tables</span></motion.h2><motion.p initial={{opacity:0}} whileInView={{opacity:1}} viewport={{once:true}} transition={{duration:0.9,delay:0.2}} className="text-white/85 text-lg mt-6 max-w-2xl mx-auto">Our robust logistics network spans continents, ensuring your goods arrive fresh, on time, every time.</motion.p><Link to="/global-reach" className="inline-flex items-center gap-2 mt-9 px-8 py-4 rounded-full bg-brand-orange text-white font-semibold hover:bg-white hover:text-brand-greenDark transition-all duration-300">Our Global Reach <ArrowRight size={18} /></Link></div></section>;
+}
+function FounderNote() {
+  return <section className="py-24 md:py-32 max-w-7xl mx-auto px-6"><div className="grid lg:grid-cols-5 gap-14 items-center">
+    <Reveal className="lg:col-span-2"><div className="relative"><div className="absolute -inset-3 bg-gradient-to-br from-brand-gold/30 to-brand-orange/20 rounded-[2rem] blur-xl" /><img src={FOUNDER} alt="Syed Ameer Hussain" className="relative rounded-[2rem] shadow-2xl w-full object-cover aspect-[4/5]" /></div></Reveal>
+    <Reveal delay={0.15} className="lg:col-span-3"><Quote className="text-brand-orange mb-6" size={48} /><p className="font-heading text-2xl md:text-3xl text-brand-greenDark leading-relaxed">"We built Tahaan Foods on a simple belief — that quality, honesty, and reliability are the truest currencies in global trade. Every shipment carries our promise."</p><div className="mt-8"><div className="font-heading text-xl text-brand-greenDark">Syed Ameer Hussain</div><div className="text-brand-orange font-semibold text-sm tracking-wide">Founder &amp; Managing Director</div></div></Reveal>
+  </div></section>;
+}
+
+function Home() {
+  return <><Hero /><StatsBand /><Intro /><div className="py-8 border-y border-brand-sand bg-white"><Marquee items={["Spices","Grains","Fresh Produce","Nuts","Pulses","Dry Fruits"]} /></div><ProductShowcase /><GlobalBand /><FounderNote /><Testimonials /><FAQ /><CTASection /></>;
+}
+function About() {
+  const values = [{icon:Award,title:"Quality First",desc:"Every product is selected to meet the expectations of discerning global buyers."},{icon:Handshake,title:"Integrity",desc:"Honest dealings and transparent partnerships built to last generations."},{icon:Sprout,title:"Sustainability",desc:"Responsible sourcing that respects farmers, communities and the planet."},{icon:Heart,title:"Customer Focus",desc:"Your success is our mission — we deliver on every promise we make."}];
+  const timeline = [{year:"2009",text:"Tahaan Foods is founded by Syed Ameer Hussain with a vision for quality-driven global trade."},{year:"2013",text:"Expanded into international markets across the Middle East and South-East Asia."},{year:"2018",text:"Crossed 150+ product varieties and established dedicated logistics partners worldwide."},{year:"2024",text:"Serving 25+ countries with a reputation for reliability, care and excellence."}];
+  return <><PageHero eyebrow="About Us" title="Rooted in trust, growing globally" subtitle="The story of Tahaan Foods Private Limited — a journey of quality, dedication and global partnerships." />
+    <section className="py-24 max-w-7xl mx-auto px-6"><div className="grid lg:grid-cols-2 gap-16 items-center"><Reveal><div className="relative"><div className="absolute -inset-3 bg-gradient-to-br from-brand-gold/30 to-brand-green/20 rounded-[2rem] blur-xl" /><img src={FOUNDER} alt="Syed Ameer Hussain" className="relative rounded-[2rem] shadow-2xl w-full object-cover aspect-[4/5]" /></div></Reveal>
+      <Reveal delay={0.15}><span className="text-brand-orange text-sm font-semibold tracking-[0.2em] uppercase">Our Founder</span><h2 className="font-heading text-4xl md:text-5xl font-semibold text-brand-greenDark mt-4">Syed Ameer Hussain</h2><p className="text-neutral-600 text-lg leading-relaxed mt-6">With a deep understanding of global trade and an unwavering commitment to quality, Syed Ameer Hussain established Tahaan Foods Private Limited to bridge the gap between exceptional producers and discerning markets worldwide.</p><p className="text-neutral-600 text-lg leading-relaxed mt-4">What began as a modest trading venture has grown into a respected name in the import and export of agricultural products — built on the simple belief that honest sourcing and reliable logistics are the foundation of every lasting partnership. Under his leadership, Tahaan Foods has stayed true to its roots: hands-on, relationship-driven, and obsessed with getting the details right.</p><p className="text-neutral-600 text-lg leading-relaxed mt-4">Today, that same ethos guides every shipment that leaves our shores and every product we source on behalf of our partners — wherever in the world they may be.</p></Reveal></div></section>
+    <section className="py-16 max-w-4xl mx-auto px-6"><Reveal><h2 className="font-heading text-3xl md:text-4xl font-semibold text-brand-greenDark mb-6">Who we are</h2><p className="text-neutral-600 text-lg leading-relaxed">Tahaan Foods Private Limited is a Hyderabad-based import and export company dedicated entirely to agricultural products. We exist to make global trade simple for our partners — sourcing the right products from the right regions, moving them efficiently, and delivering them in dependable condition. Whether you are a buyer looking to import premium agri goods into your market, or a producer seeking a trustworthy route to overseas buyers, we are the bridge in between.</p><p className="text-neutral-600 text-lg leading-relaxed mt-4">Our focus is deliberately narrow so our expertise can be deep. We do not try to be everything to everyone — we concentrate on what we do best: finding, sourcing and moving agricultural products across borders. That clarity has earned us the trust of partners across six continents, and it is the standard we hold ourselves to on every single transaction.</p></Reveal></section>
+    <section className="py-20 bg-brand-cream bg-noise"><div className="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-8">{[{icon:Target,title:"Our Mission",text:"To deliver premium agricultural products across the globe while building lasting partnerships founded on trust, reliability and mutual growth."},{icon:Eye,title:"Our Vision",text:"To become a globally recognised leader in agri import and export, celebrated for dependable sourcing, efficient logistics and ethical trade."}].map((b,i)=><Reveal key={b.title} delay={i*0.1}><div className="bg-white rounded-3xl p-10 shadow-sm h-full"><div className="w-14 h-14 rounded-2xl bg-brand-orange/10 flex items-center justify-center mb-6"><b.icon className="text-brand-orange" size={26} /></div><h3 className="font-heading text-2xl text-brand-greenDark mb-3">{b.title}</h3><p className="text-neutral-600 leading-relaxed">{b.text}</p></div></Reveal>)}</div></section>
+    <section className="py-24 max-w-7xl mx-auto px-6"><Reveal className="text-center mb-16"><span className="text-brand-orange text-sm font-semibold tracking-[0.2em] uppercase">What Drives Us</span><h2 className="font-heading text-4xl md:text-5xl font-semibold text-brand-greenDark mt-4">Our Core Values</h2></Reveal><div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">{values.map((v,i)=><Reveal key={v.title} delay={i*0.1}><motion.div whileHover={{y:-8}} className="bg-white border border-brand-sand rounded-3xl p-8 h-full"><div className="w-12 h-12 rounded-xl bg-brand-green/10 flex items-center justify-center mb-5"><v.icon className="text-brand-green" size={22} /></div><h3 className="font-heading text-xl text-brand-greenDark mb-2">{v.title}</h3><p className="text-neutral-600 text-sm leading-relaxed">{v.desc}</p></motion.div></Reveal>)}</div></section>
+    <section className="py-24 bg-brand-greenDark"><div className="max-w-4xl mx-auto px-6"><Reveal className="text-center mb-16"><span className="text-brand-gold text-sm font-semibold tracking-[0.2em] uppercase">Our Journey</span><h2 className="font-heading text-4xl md:text-5xl font-semibold text-white mt-4">Milestones</h2></Reveal><div className="relative border-l-2 border-white/20 ml-4 space-y-12">{timeline.map((t,i)=><Reveal key={t.year} delay={i*0.1}><div className="relative pl-10"><div className="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-brand-orange ring-4 ring-brand-greenDark" /><div className="font-heading text-2xl text-brand-gold">{t.year}</div><p className="text-white/80 mt-2 leading-relaxed">{t.text}</p></div></Reveal>)}</div></div></section>
+    <section className="py-20 max-w-4xl mx-auto px-6"><Reveal><h2 className="font-heading text-3xl md:text-4xl font-semibold text-brand-greenDark mb-6">Why partners choose us</h2><p className="text-neutral-600 text-lg leading-relaxed">In a world of endless suppliers, partners return to Tahaan Foods because we make trade feel effortless. We pick up the phone, we find the product, we move it across the world, and we do exactly what we said we would. No over-promising, no surprises — just a dependable partner you can build a business around.</p><p className="text-neutral-600 text-lg leading-relaxed mt-4">That reliability is the product of years of relationships with growers, port agents, shipping lines and customs contacts. It is the quiet work behind every shipment, and it is the reason our partners keep coming back, shipment after shipment, year after year.</p></Reveal></section>
+  </>;
+}
+function Products() {
+  const spicesImgs = [{src:PX(33440710),label:"Red Chilli"},{src:PX(6220708),label:"Turmeric"},{src:PX(9142634),label:"Cardamom"},{src:PX(35809378),label:"Cumin"},{src:PX(10487732),label:"Black Pepper"},{src:PX(35809381),label:"Coriander"}];
+  const grainsImgs = [{src:PX(31555433),label:"Basmati Rice"},{src:PX(17442637),label:"Maize (Corn)"},{src:PX(158603),label:"Wheat"},{src:PX(7420513),label:"Millets"},{src:PX(11034657),label:"Barley"},{src:PX(14998444),label:"Sorghum"}];
+  const produceImgs = [{src:TOMATO,label:"Tomatoes"},{src:POTATO,label:"Potatoes"},{src:CARROT,label:"Carrots"},{src:APPLE,label:"Apples"},{src:GRAPE,label:"Grapes"},{src:BANANA,label:"Bananas"}];
+  const nutsImgs = [{src:LENTIL,label:"Split Red Lentils"},{src:PEANUT,label:"Peanuts"}];
+  const categories = [{title:"Spices & Seasonings",images:spicesImgs,desc:"India's spice heritage is the backbone of our trade. We source vibrant, aromatic spices from the regions that grow them best — red chillies from the Deccan, cardamom from the Western Ghats, turmeric from the south — and deliver them to kitchens and manufacturers worldwide. Every consignment is selected for colour, potency and purity.",items:["Red Chilli","Turmeric","Cardamom","Cumin","Black Pepper","Coriander"]},{title:"Rice & Grains",images:grainsImgs,desc:"From prized basmati to wholesome maize and millets, our grains are cleaned, graded and packed to meet the exacting standards of international buyers. We work closely with millers and growers to ensure consistent quality across shipments, season after season.",items:["Basmati Rice","Maize (Corn)","Wheat","Millets","Barley","Sorghum"]},{title:"Fresh Produce",images:produceImgs,desc:"We move farm-fresh fruits and vegetables from harvest to port with the care perishables demand. Our produce is handled to preserve freshness, appearance and shelf life, giving overseas buyers confidence in every container that arrives.",items:["Tomatoes","Potatoes","Onions","Carrots","Apples","Grapes","Bananas","Mangoes"]},{title:"Nuts & Pulses",images:nutsImgs,desc:"Protein-rich pulses and premium nuts form a growing part of global demand. We sort, grade and pack lentils, chickpeas, peanuts and more to specification — a dependable source of nutrition for markets around the world.",items:["Split Red Lentils","Cashews","Peanuts","Chickpeas","Kidney Beans","Almonds"]}];
+  return <><PageHero eyebrow="Our Products" title="A world of premium agri goods" subtitle="From vibrant spices to wholesome grains, we trade in agricultural quality that speaks for itself — sourced from the regions that grow it best and shipped to wherever it's needed." />
+    <section className="py-16 max-w-4xl mx-auto px-6"><Reveal><h2 className="font-heading text-3xl md:text-4xl font-semibold text-brand-greenDark mb-6">What we trade in</h2><p className="text-neutral-600 text-lg leading-relaxed">Tahaan Foods trades exclusively in agricultural products — the grains, spices, produce, pulses and nuts that feed the world. Our catalogue spans the categories below, but it does not end there. Because we are fundamentally a sourcing business, if a partner needs an agri product we do not list, we will find it, source it and deliver it. Think of these categories as a starting point, not a boundary.</p><p className="text-neutral-600 text-lg leading-relaxed mt-4">Every product we move is chosen with the end market in mind — the right variety, the right grade, the right packaging. It is this attention to detail that turns a shipment into a long-term relationship.</p></Reveal></section>
+    <section className="pb-8 max-w-7xl mx-auto px-6"><Reveal><ProductCarousel /></Reveal></section>
+    <section className="py-16 max-w-7xl mx-auto px-6 space-y-24">{categories.map((p,i)=><Reveal key={p.title}><div className={"grid lg:grid-cols-2 gap-14 items-center " + (i%2===1?"lg:[direction:rtl]":"")}><ImageCarousel images={p.images} /><div className="[direction:ltr]"><h2 className="font-heading text-3xl md:text-4xl font-semibold text-brand-greenDark">{p.title}</h2><p className="text-neutral-600 text-lg mt-4 leading-relaxed">{p.desc}</p><div className="grid grid-cols-2 gap-3 mt-8">{p.items.map(it=><div key={it} className="flex items-center gap-2 text-neutral-700"><span className="w-6 h-6 rounded-full bg-brand-green/10 flex items-center justify-center shrink-0"><Check size={14} className="text-brand-green" /></span>{it}</div>)}</div></div></div></Reveal>)}</section>
+    <section className="py-20 max-w-4xl mx-auto px-6 text-center"><Reveal><h2 className="font-heading text-3xl md:text-4xl font-semibold text-brand-greenDark mb-5">Don't see what you need?</h2><p className="text-neutral-600 text-lg leading-relaxed">Our catalogue is a starting point, not a limit. If you need an agricultural product we haven't listed — from any part of India or anywhere in the world — tell us what you're looking for. We'll source it, move it and deliver it to your specification.</p><Link to="/contact" className="inline-flex items-center gap-2 mt-8 px-8 py-4 rounded-full bg-brand-orange text-white font-semibold hover:bg-brand-greenDark transition-colors duration-300">Tell us your requirement <ArrowRight size={18} /></Link></Reveal></section>
+  </>;
+}
+function Services() {
+  const services = [{icon:PackageCheck,title:"Agri Export",desc:"We ship India's finest agricultural products — spices, grains, produce, pulses and nuts — to buyers across the globe, managing the journey from source to port with care."},{icon:Ship,title:"Agri Import",desc:"We bring in the agricultural products you need from trusted sources worldwide, so your market is always supplied with the right goods at the right time."},{icon:Globe,title:"Global Sourcing & Supply",desc:"If you need to source an agri product — from any part of India or any other country — we find it, procure it and supply it. You name the product; we handle the rest."},{icon:Truck,title:"Logistics & Shipping",desc:"We provide end-to-end logistics support across sea, air and land, coordinating the movement of your goods so they arrive safely, intact and on schedule."}];
+  const steps = [{n:"01",title:"Source",text:"We identify and partner with trusted growers and producers for exactly what you need."},{n:"02",title:"Procure",text:"We procure to your specification — the right variety, grade and quantity — on your behalf."},{n:"03",title:"Move",text:"We coordinate shipping and logistics to get your goods from origin to destination."},{n:"04",title:"Deliver",text:"Your order arrives at the agreed port or location, on time and ready for your market."}];
+  const logistics = [{icon:FileCheck,title:"Order Confirmation",desc:"Once your requirement is finalised, we confirm quantities, grades, packaging and timelines in writing — a clear starting point for the whole shipment."},{icon:Boxes,title:"Packaging & Labelling",desc:"Goods are cleaned, graded and packed to your specification and destination requirements, with labelling that meets the standards of your market."},{icon:PackageCheck,title:"Container Loading",desc:"We supervise stuffing and loading at origin to protect product integrity and maximise container space for a safe, efficient journey."},{icon:Ship,title:"Sea, Air & Land Freight",desc:"We choose the right mode for your timeline and budget and coordinate the carrier, moving your goods across the routes we know best."},{icon:FileText,title:"Customs & Documentation",desc:"From commercial invoices to certificates of origin, we handle the paperwork and customs clearance so your shipment clears without friction."},{icon:Truck,title:"Final Delivery",desc:"On arrival, we coordinate last-mile movement to your warehouse or port of discharge, closing the loop from source to destination."}];
+  return <><PageHero eyebrow="Our Services" title="Sourcing & moving agri products worldwide" subtitle="We do one thing, and we do it well — source and move agricultural products across borders for partners who value reliability over everything else." />
+    <section className="py-16 max-w-4xl mx-auto px-6"><Reveal><h2 className="font-heading text-3xl md:text-4xl font-semibold text-brand-greenDark mb-6">What we do</h2><p className="text-neutral-600 text-lg leading-relaxed">Tahaan Foods is a company built entirely around the import and export of agricultural products. We are not generalists — we focus exclusively on agri, which means our network, our relationships and our expertise are all pointed in one direction: getting the right agricultural goods from where they grow to where they're needed.</p><p className="text-neutral-600 text-lg leading-relaxed mt-4">At our core, we are a sourcing and supply partner. If someone needs a product — whether it's grown in India or anywhere else in the world — we provide it. Tell us what you need, and we will find it, procure it and deliver it. Pair that with the logistics support to move it across continents, and you have a single, dependable partner for the entire journey.</p><p className="text-neutral-600 text-lg leading-relaxed mt-4">We focus on what we do best — sourcing and moving agri products — so our partners get specialists, not generalists. The result is simpler trade, fewer moving parts, and a partner who is accountable from the first call to the final delivery.</p></Reveal></section>
+    <section className="py-12 max-w-7xl mx-auto px-6"><div className="grid sm:grid-cols-2 lg:grid-cols-2 gap-6">{services.map((s,i)=><Reveal key={s.title} delay={(i%2)*0.1}><motion.div whileHover={{y:-8}} className="group bg-white border border-brand-sand rounded-3xl p-10 h-full hover:shadow-xl transition-shadow flex gap-6"><div className="w-14 h-14 shrink-0 rounded-2xl bg-brand-cream flex items-center justify-center group-hover:bg-brand-orange transition-colors duration-300"><s.icon className="text-brand-orange group-hover:text-white transition-colors duration-300" size={26} /></div><div><h3 className="font-heading text-2xl text-brand-greenDark mb-3">{s.title}</h3><p className="text-neutral-600 leading-relaxed">{s.desc}</p></div></motion.div></Reveal>)}</div></section>
+    <section className="relative py-28 mt-16 overflow-hidden"><div className="absolute inset-0 bg-brand-greenDark" /><div className="relative max-w-7xl mx-auto px-6"><Reveal className="text-center mb-16"><span className="text-brand-gold text-sm font-semibold tracking-[0.2em] uppercase">How We Work</span><h2 className="font-heading text-4xl md:text-5xl font-semibold text-white mt-4">Our Process</h2><p className="text-white/70 mt-4 max-w-2xl mx-auto">A simple, transparent four-step flow that takes you from a requirement to a delivered shipment.</p></Reveal><div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">{steps.map((s,i)=><Reveal key={s.n} delay={i*0.1}><div className="text-center"><div className="font-heading text-6xl font-semibold text-brand-gold/40 mb-3">{s.n}</div><h3 className="font-heading text-2xl text-white mb-2">{s.title}</h3><p className="text-white/75 text-sm leading-relaxed">{s.text}</p></div></Reveal>)}</div></div></section>
+    <section className="py-20 max-w-7xl mx-auto px-6"><Reveal className="max-w-3xl mx-auto text-center mb-14"><span className="text-brand-orange text-sm font-semibold tracking-[0.2em] uppercase">Logistics &amp; Shipping</span><h2 className="font-heading text-4xl md:text-5xl font-semibold text-brand-greenDark mt-4">How your goods move</h2><p className="text-neutral-600 text-lg mt-5 leading-relaxed">From the moment a requirement is confirmed to the day a container is unloaded at your port, we manage the logistics so you don't have to. Here is the journey your shipment takes with us.</p></Reveal><div className="grid md:grid-cols-2 gap-6">{logistics.map((l,i)=><Reveal key={l.title} delay={(i%2)*0.1}><div className="flex gap-6 bg-white border border-brand-sand rounded-3xl p-8 h-full"><div className="w-12 h-12 shrink-0 rounded-2xl bg-brand-cream flex items-center justify-center"><l.icon className="text-brand-orange" size={24} /></div><div><h3 className="font-heading text-xl text-brand-greenDark mb-2">{l.title}</h3><p className="text-neutral-600 leading-relaxed">{l.desc}</p></div></div></Reveal>)}</div><Reveal className="mt-12 max-w-3xl mx-auto text-center"><p className="text-neutral-500 leading-relaxed">Every shipment is tracked and coordinated end-to-end. Whether it moves by sea, air or land, your goods stay our responsibility until they reach you.</p></Reveal></section>
+    <section className="py-20 max-w-4xl mx-auto px-6 text-center"><Reveal><h2 className="font-heading text-3xl md:text-4xl font-semibold text-brand-greenDark mb-5">Any product, any origin</h2><p className="text-neutral-600 text-lg leading-relaxed">Our promise is simple: if it's an agricultural product and it exists in the world, we can source it and get it to you. From a single container of a common grain to a specialised request from a remote growing region, we treat every requirement with the same seriousness — because to us, sourcing is the whole business.</p><Link to="/contact" className="inline-flex items-center gap-2 mt-8 px-8 py-4 rounded-full bg-brand-orange text-white font-semibold hover:bg-brand-greenDark transition-colors duration-300">Start sourcing with us <ArrowRight size={18} /></Link></Reveal></section>
+  </>;
+}
+function GlobalReach() {
+  const regions = [{name:"Middle East",text:"A cornerstone of our trade, the Middle East relies on India for spices, rice and fresh produce. We move regular shipments into the UAE, Saudi Arabia, Qatar and Oman through established sea routes from southern India."},{name:"Asia Pacific",text:"From Singapore's busy hub to markets in Malaysia, Japan and Vietnam, we serve the growing demand for Indian agri products across South-East and East Asia with dependable lead times."},{name:"Europe",text:"Discerning European buyers in the UK, Germany, the Netherlands and France trust us for consistent quality and reliable documentation-free movement, shipment after shipment."},{name:"Africa",text:"We supply markets in Kenya, Nigeria, South Africa and Egypt, building trade corridors that support both staple and specialised agri requirements across the continent."},{name:"North America",text:"From the US East Coast to Canada and Mexico, we deliver Indian agri products to buyers who value traceability and on-time delivery across the Pacific and Atlantic."},{name:"Oceania",text:"Australia and New Zealand round out our reach, with shipments that meet the strict expectations of these quality-conscious markets."}];
+  return <><PageHero eyebrow="Global Reach" title="Trusted across continents" subtitle="A far-reaching network that delivers quality wherever it's needed — trace the sea routes we sail, from southern India to ports across six continents." />
+    <section className="py-16 max-w-7xl mx-auto px-6"><Reveal className="text-center mb-10"><span className="text-brand-orange text-sm font-semibold tracking-[0.2em] uppercase">Our Network</span><h2 className="font-heading text-4xl md:text-5xl font-semibold text-brand-greenDark mt-4">Trace our sea routes</h2><p className="text-neutral-600 mt-4 max-w-2xl mx-auto">Hover over any country to see the sea route our vessels take from Chennai, on India's southern coast, to that destination port.</p></Reveal><Reveal delay={0.1}><WorldMap /></Reveal></section>
+    <section className="py-10 bg-brand-cream bg-noise"><div className="max-w-7xl mx-auto px-6"><Reveal className="text-center mb-8"><span className="text-brand-orange text-sm font-semibold tracking-[0.2em] uppercase">Countries We Serve</span><h2 className="font-heading text-3xl font-semibold text-brand-greenDark mt-3">25+ nations and counting</h2></Reveal><FlagsCarousel /></div></section>
+    <section className="py-20 max-w-4xl mx-auto px-6"><Reveal className="mb-12"><h2 className="font-heading text-3xl md:text-4xl font-semibold text-brand-greenDark mb-6">Where we operate</h2><p className="text-neutral-600 text-lg leading-relaxed">Tahaan Foods serves partners across six continents, with a network built over years of consistent, dependable trade. Our reach is not measured in numbers alone — it is measured in the relationships we've earned at ports, with growers and with buyers in every region we serve. Below is a sense of where we are active today, and we are expanding steadily into new markets each year.</p></Reveal><div className="space-y-10">{regions.map((r,i)=><Reveal key={r.name} delay={i*0.05}><div><h3 className="font-heading text-2xl text-brand-greenDark mb-2">{r.name}</h3><p className="text-neutral-600 leading-relaxed">{r.text}</p></div></Reveal>)}</div></section>
+    <section className="py-16 max-w-4xl mx-auto px-6 text-center"><Reveal><h2 className="font-heading text-3xl md:text-4xl font-semibold text-brand-greenDark mb-5">Want to ship to a new market?</h2><p className="text-neutral-600 text-lg leading-relaxed">Even if your destination isn't listed, our sourcing and logistics network can likely reach it. Tell us where you need your goods, and we'll map the route.</p><Link to="/contact" className="inline-flex items-center gap-2 mt-8 px-8 py-4 rounded-full bg-brand-orange text-white font-semibold hover:bg-brand-greenDark transition-colors duration-300">Plan your shipment <ArrowRight size={18} /></Link></Reveal></section>
+  </>;
+}
+function Contact() {
+  const [form, setForm] = useState({name:"",email:"",company:"",message:""});
+  const [sent, setSent] = useState(false);
+  const info = [{icon:MapPin,title:"Visit Us",text:"Hyderabad, Telangana, India"},{icon:Phone,title:"Call Us",text:"+91 90000 00000"},{icon:Mail,title:"Email Us",text:"info@tahanfoods.com"}];
+  const submit = (e) => { e.preventDefault(); const subject = encodeURIComponent("New enquiry from " + (form.name||"the website")); const body = encodeURIComponent("Name: "+form.name+"\nEmail: "+form.email+"\nCompany: "+form.company+"\n\n"+form.message); window.location.href = "mailto:syedfaizhussain652@gmail.com?subject="+subject+"&body="+body; setSent(true); };
+  return <><PageHero eyebrow="Contact" title="Let's build something together" subtitle="Have an enquiry or a product to source? Our team is ready to help you trade with confidence." />
+    <section className="py-24 max-w-7xl mx-auto px-6"><div className="grid lg:grid-cols-5 gap-14">
+      <Reveal className="lg:col-span-2 space-y-6">{info.map(c=><div key={c.title} className="flex gap-5 bg-brand-cream rounded-2xl p-6 border border-brand-sand"><div className="w-12 h-12 rounded-xl bg-brand-orange/10 flex items-center justify-center shrink-0"><c.icon className="text-brand-orange" size={22} /></div><div><h3 className="font-heading text-lg text-brand-greenDark">{c.title}</h3><p className="text-neutral-600 mt-1">{c.text}</p></div></div>)}<div className="bg-brand-greenDark rounded-2xl p-8 text-white"><h3 className="font-heading text-xl mb-2">Business Hours</h3><p className="text-white/75 text-sm">Monday – Saturday</p><p className="text-white/75 text-sm">9:00 AM – 7:00 PM IST</p></div></Reveal>
+      <Reveal delay={0.15} className="lg:col-span-3">{sent ? <div className="bg-brand-green/10 border border-brand-green/30 rounded-3xl p-12 text-center h-full flex flex-col items-center justify-center"><CheckCircle2 className="text-brand-green mb-4" size={56} /><h3 className="font-heading text-2xl text-brand-greenDark mb-2">Thank you!</h3><p className="text-neutral-600">Your email app should have opened with your enquiry ready to send. If it didn't, email us directly at info@tahanfoods.com.</p><button onClick={()=>setSent(false)} className="mt-6 text-brand-orange font-semibold hover:underline">Send another</button></div> :
+        <form onSubmit={submit} className="bg-white border border-brand-sand rounded-3xl p-8 md:p-10 shadow-sm space-y-6"><div className="grid md:grid-cols-2 gap-6"><div><label className="block text-sm font-semibold text-neutral-700 mb-2">Full Name</label><input required name="name" value={form.name} onChange={e=>setForm({...form,name:e.target.value})} className="w-full px-4 py-3 rounded-xl border border-brand-sand focus:border-brand-orange focus:ring-2 focus:ring-brand-orange/20 outline-none transition" placeholder="Your name" /></div><div><label className="block text-sm font-semibold text-neutral-700 mb-2">Email</label><input required type="email" name="email" value={form.email} onChange={e=>setForm({...form,email:e.target.value})} className="w-full px-4 py-3 rounded-xl border border-brand-sand focus:border-brand-orange focus:ring-2 focus:ring-brand-orange/20 outline-none transition" placeholder="you@company.com" /></div></div><div><label className="block text-sm font-semibold text-neutral-700 mb-2">Company</label><input name="company" value={form.company} onChange={e=>setForm({...form,company:e.target.value})} className="w-full px-4 py-3 rounded-xl border border-brand-sand focus:border-brand-orange focus:ring-2 focus:ring-brand-orange/20 outline-none transition" placeholder="Company name" /></div><div><label className="block text-sm font-semibold text-neutral-700 mb-2">Message</label><textarea required name="message" value={form.message} onChange={e=>setForm({...form,message:e.target.value})} rows={5} className="w-full px-4 py-3 rounded-xl border border-brand-sand focus:border-brand-orange focus:ring-2 focus:ring-brand-orange/20 outline-none transition resize-none" placeholder="Tell us about your requirements..." /></div><button type="submit" className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-brand-orange text-white font-semibold hover:bg-brand-greenDark transition-colors duration-300">Send Enquiry <Send size={18} /></button></form>}
+      </Reveal>
+    </div></section>
+  </>;
+}
+
+function ScrollToTop() { const loc = useLocation(); useEffect(()=>window.scrollTo(0,0), [loc.pathname]); return null; }
+function Layout({ children }) { return <div className="min-h-screen bg-white"><Navbar /><main>{children}</main><Footer /></div>; }
+function NotFound() { return <div className="min-h-screen flex items-center justify-center bg-brand-cream"><div className="text-center"><h1 className="font-heading text-6xl text-brand-greenDark">404</h1><p className="text-neutral-600 mt-4">This page doesn't exist.</p><Link to="/" className="inline-flex mt-6 px-6 py-3 rounded-full bg-brand-orange text-white font-semibold">Back home</Link></div></div>; }
+
+function App() {
+  return <HashRouter><ScrollToTop /><Layout>
+    <Routes>
+      <Route path="/" element={<Home />} />
+      <Route path="/about" element={<About />} />
+      <Route path="/products" element={<Products />} />
+      <Route path="/services" element={<Services />} />
+      <Route path="/global-reach" element={<GlobalReach />} />
+      <Route path="/contact" element={<Contact />} />
+      <Route path="*" element={<NotFound />} />
+    </Routes>
+  </Layout></HashRouter>;
+}
+
+createRoot(document.getElementById("root")).render(<App />);
+setTimeout(function(){var l=document.getElementById('app-loader');if(l&&l.parentNode)l.parentNode.removeChild(l);},6000);
+</script>
+</body>
+</html>
