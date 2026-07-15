@@ -26,8 +26,8 @@ tailwind.config = {
   ::-webkit-scrollbar{width:10px;}::-webkit-scrollbar-track{background:#fff;}::-webkit-scrollbar-thumb{background:#E6A817;border-radius:10px;}::-webkit-scrollbar-thumb:hover{background:#E8720C;}
   #app-loader{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#0F5228 0%,#1B7A3D 100%);animation:lfw 4.2s forwards}
   .ll{display:flex;align-items:center;gap:24px;animation:pan 4.2s forwards}
-  .lmed{width:104px;height:104px;border-radius:50%;background:#FCF6E9;display:flex;align-items:center;justify-content:center;box-shadow:0 14px 44px rgba(0,0,0,.30);opacity:0;transform:scale(.7);animation:popin .7s .2s forwards}
-  .llogo{width:80px;height:80px}
+  .lmed{width:84px;height:84px;border-radius:50%;background:#FCF6E9;display:flex;align-items:center;justify-content:center;box-shadow:0 14px 44px rgba(0,0,0,.30);opacity:0;transform:scale(.7);animation:popin .7s .2s forwards}
+  .llogo{width:72px;height:72px}
   .ltxt{display:flex;flex-direction:column;opacity:0;transform:translateX(30px);animation:slidein .5s .9s forwards}
   .lname{font-family:'Fraunces',serif;letter-spacing:.3em;font-size:22px;color:#fff;font-weight:700;white-space:nowrap}
   .lsub{font-family:'Manrope',sans-serif;letter-spacing:.35em;font-size:10px;color:#F2B93B;margin-top:6px;opacity:0;animation:fade .4s 1.25s forwards}
@@ -88,7 +88,9 @@ const BANANA = B+"7820d798b_1000016123_455e9d42a2a957265f2403abb1be05aa-18_1_202
 const FIELD = "https://images.pexels.com/photos/12702575/pexels-photo-12702575.jpeg?auto=compress&cs=tinysrgb&w=900";
 
 function Reveal({ children, delay = 0, y = 40, className = "" }) {
-  return <motion.div className={className} initial={{ opacity:0, y }} whileInView={{ opacity:1, y:0 }} viewport={{ once:true, margin:"-80px" }} transition={{ duration:0.8, delay, ease:[0.16,1,0.3,1] }}>{children}</motion.div>;
+  const ref = useRef(null);
+  const inView = useInView(ref, { once:true, margin:"0px" });
+  return <motion.div ref={ref} className={className} initial={{ opacity:0, y }} animate={inView ? { opacity:1, y:0 } : { opacity:0, y }} transition={{ duration:0.8, delay, ease:[0.16,1,0.3,1] }}>{children}</motion.div>;
 }
 function AnimatedCounter({ value = 0, suffix = "", duration = 2 }) {
   const ref = useRef(null);
@@ -270,7 +272,7 @@ function Intro() {
 function ProductShowcase() {
   const products = [{title:"Spices & Seasonings",img:CHILLI,desc:"Aromatic, hand-selected spices with bold, authentic flavour."},{title:"Rice & Grains",img:CORN,desc:"Premium basmati and wholesome grains, graded to perfection."},{title:"Fresh Produce",img:TOMATO,desc:"Farm-fresh fruits and vegetables handled with care."},{title:"Nuts & Pulses",img:PEANUT,desc:"Protein-rich pulses and premium nuts, sorted and packed."}];
   return <section className="py-24 max-w-7xl mx-auto px-6"><Reveal className="text-center mb-14"><span className="text-brand-orange text-sm font-semibold tracking-[0.2em] uppercase">Our Catalogue</span><h2 className="font-heading text-4xl md:text-5xl font-semibold text-brand-greenDark mt-4">Premium products, global standards</h2><p className="text-neutral-600 max-w-2xl mx-auto mt-4">Hover any category to explore what we trade in — a curated selection of the finest agricultural goods, sourced and shipped worldwide.</p></Reveal>
-    <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">{products.map((p,i)=><Reveal key={p.title} delay={i*0.08}><Link to="/products" className="group block relative rounded-3xl overflow-hidden aspect-[3/4] shadow-lg"><img src={p.img} alt={p.title} className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" /><div className="absolute inset-0 bg-brand-greenDark/0 group-hover:bg-brand-greenDark/75 transition-colors duration-500" /><div className="absolute inset-0 flex flex-col items-center justify-center text-center px-6 opacity-0 group-hover:opacity-100 transition-opacity duration-500"><h3 className="font-heading text-2xl text-white mb-2">{p.title}</h3><p className="text-white/85 text-sm leading-relaxed">{p.desc}</p><span className="mt-4 text-brand-gold text-sm font-semibold tracking-wide">Explore →</span></div><div className="absolute bottom-0 left-0 right-0 p-5 bg-gradient-to-t from-brand-greenDark/80 to-transparent group-hover:opacity-0 transition-opacity duration-300"><h3 className="font-heading text-xl text-white">{p.title}</h3></div></Link></Reveal>)}</div>
+    <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">{products.map((p,i)=><Reveal key={p.title} delay={i*0.08}><Link to="/products" className="group block relative rounded-3xl overflow-hidden aspect-[3/4] shadow-lg"><img src={p.img} alt={p.title} className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" /><div className="absolute inset-0 bg-brand-greenDark/0 group-hover:bg-brand-greenDark/90 transition-colors duration-500" /><div className="absolute inset-0 flex flex-col items-center justify-center text-center px-6 opacity-0 group-hover:opacity-100 transition-opacity duration-500"><h3 className="font-heading text-2xl text-white mb-2">{p.title}</h3><p className="text-white/85 text-sm leading-relaxed">{p.desc}</p><span className="mt-4 text-brand-gold text-sm font-semibold tracking-wide">Explore →</span></div><div className="absolute bottom-0 left-0 right-0 p-5 bg-gradient-to-t from-brand-greenDark/80 to-transparent group-hover:opacity-0 transition-opacity duration-300"><h3 className="font-heading text-xl text-white">{p.title}</h3></div></Link></Reveal>)}</div>
   </section>;
 }
 function GlobalBand() {
