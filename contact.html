@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Contact — Tahaan Foods</title>
+<meta name="description" content="Get in touch with Tahaan Foods. Share your requirements and our team will respond within one business day."/>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='48' fill='%230F5228'/><text x='50' y='62' font-size='52' text-anchor='middle' fill='%23E6A817' font-family='serif'>T</text></svg>"/>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config={theme:{extend:{colors:{brand:{orange:'#E8720C',gold:'#E6A817',green:'#1B7A3D',greenDark:'#0F5228',cream:'#FCF6E9',sand:'#F7E9C6'}},fontFamily:{heading:['Fraunces','serif'],body:['Manrope','sans-serif']}}}}
+</script>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+body{font-family:'Manrope',sans-serif;}
+::selection{background:#E8720C;color:#fff;}
+::-webkit-scrollbar{width:10px}::-webkit-scrollbar-track{background:#fff}::-webkit-scrollbar-thumb{background:#E6A817;border-radius:10px}
+.bg-noise{background-image:radial-gradient(circle at 1px 1px,rgba(0,0,0,.04) 1px,transparent 0);background-size:22px 22px}
+#app-loader{position:fixed;inset:0;background:#0F5228;display:flex;align-items:center;justify-content:center;z-index:9999;flex-direction:column;gap:8px;transition:opacity .5s}
+#app-loader.gone{opacity:0;pointer-events:none}
+.loader-logo{font-family:'Fraunces',serif;color:#fff;font-size:1.7rem;letter-spacing:.05em;animation:lp 1.6s ease-in-out infinite}
+.loader-sub{color:#E6A817;font-size:.7rem;letter-spacing:.3em;text-transform:uppercase}
+@keyframes lp{0%,100%{opacity:.55}50%{opacity:1}}
+</style>
+<script type="importmap">
+{"imports":{"react":"https://esm.sh/react@18.2.0","react-dom/client":"https://esm.sh/react-dom@18.2.0/client","framer-motion":"https://esm.sh/framer-motion@11.16.4?deps=react@18.2.0","lucide-react":"https://esm.sh/lucide-react@0.475.0?deps=react@18.2.0"}}
+</script>
+</head>
+<body>
+<div id="app-loader"><div class="loader-logo">Tahaan Foods</div><div class="loader-sub">Private Limited</div></div>
+<div id="root"></div>
+<script type="text/babel" data-type="module" data-presets="react">
+import React,{useState,useEffect} from "react";
+import {createRoot} from "react-dom/client";
+import {motion,AnimatePresence} from "framer-motion";
+import {Menu,X,Mail,Phone,MapPin,Linkedin,Instagram,Facebook,Send,CheckCircle2} from "lucide-react";
+
+const LOGO="https://media.base44.com/images/public/6a4e5de5f7403fbafbc3fde5/9491c35a4_TAHAAN_FOODS_PRIVATE_LIMITED__1_-removebg-preview.png";
+const navLinks=[{name:"Home",href:"home.html"},{name:"About",href:"about.html"},{name:"Products",href:"products.html"},{name:"Services",href:"services.html"},{name:"Global Reach",href:"global-reach.html"},{name:"Contact",href:"contact.html"}];
+const cur=(window.location.pathname.split("/").pop()||"home.html").toLowerCase();
+
+function Navbar(){
+  const [scrolled,setScrolled]=useState(false);
+  const [open,setOpen]=useState(false);
+  useEffect(()=>{const f=()=>setScrolled(window.scrollY>30);window.addEventListener("scroll",f);return()=>window.removeEventListener("scroll",f);},[]);
+  return (
+    <motion.header initial={{y:-80}} animate={{y:0}} transition={{duration:.7,ease:[.16,1,.3,1]}} className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${scrolled?"bg-white/85 backdrop-blur-xl shadow-[0_8px_40px_rgba(0,0,0,0.06)] py-3":"bg-transparent py-5"}`}>
+      <nav className="max-w-7xl mx-auto px-6 flex items-center justify-between">
+        <a href="home.html" className="flex items-center gap-3 group">
+          <img src={LOGO} alt="Tahaan Foods logo" className="w-11 h-11 rounded-full object-cover ring-2 ring-brand-gold/40 transition-transform group-hover:rotate-12 duration-500"/>
+          <div className="leading-tight"><span className="block font-heading font-semibold text-lg text-brand-greenDark">Tahaan Foods</span><span className="block text-[10px] tracking-[0.25em] text-brand-orange uppercase">Private Limited</span></div>
+        </a>
+        <div className="hidden lg:flex items-center gap-8">
+          {navLinks.map((l)=>(<a key={l.href} href={l.href} className="relative text-sm font-medium text-neutral-700 hover:text-brand-orange transition-colors group">{l.name}<span className={`absolute -bottom-1.5 left-0 h-0.5 bg-brand-orange transition-all duration-300 ${l.href.toLowerCase()===cur?"w-full":"w-0 group-hover:w-full"}`}/></a>))}
+        </div>
+        <a href="contact.html" className="hidden lg:inline-flex items-center px-6 py-2.5 rounded-full bg-brand-greenDark text-white text-sm font-semibold hover:bg-brand-orange transition-colors duration-300">Get a Quote</a>
+        <button onClick={()=>setOpen(!open)} className="lg:hidden text-brand-greenDark p-2">{open?<X size={26}/>:<Menu size={26}/>}</button>
+      </nav>
+      <AnimatePresence>{open&&(<motion.div initial={{opacity:0,height:0}} animate={{opacity:1,height:"auto"}} exit={{opacity:0,height:0}} className="lg:hidden bg-white/95 backdrop-blur-xl overflow-hidden"><div className="px-6 py-6 flex flex-col gap-4">{navLinks.map((l)=>(<a key={l.href} href={l.href} className="text-base font-medium text-neutral-800 hover:text-brand-orange">{l.name}</a>))}<a href="contact.html" className="mt-2 inline-flex justify-center px-6 py-3 rounded-full bg-brand-greenDark text-white font-semibold">Get a Quote</a></div></motion.div>)}</AnimatePresence>
+    </motion.header>
+  );
+}
+
+function Footer(){
+  return (
+    <footer className="bg-brand-greenDark text-white relative overflow-hidden">
+      <div className="absolute -top-24 -right-24 w-96 h-96 rounded-full bg-brand-orange/20 blur-3xl"/>
+      <div className="absolute -bottom-24 -left-24 w-96 h-96 rounded-full bg-brand-gold/20 blur-3xl"/>
+      <div className="relative max-w-7xl mx-auto px-6 py-14">
+        <div className="grid md:grid-cols-4 gap-10">
+          <div className="md:col-span-1">
+            <div className="flex items-center gap-3 mb-4"><img src={LOGO} alt="Tahaan Foods" className="w-12 h-12 rounded-full object-cover ring-2 ring-brand-gold/40"/><span className="font-heading font-semibold text-xl">Tahaan Foods</span></div>
+            <p className="text-white/70 text-sm leading-relaxed">Bridging global markets with premium agricultural products through trusted import &amp; export excellence.</p>
+            <div className="flex gap-3 mt-5">{[Linkedin,Instagram,Facebook].map((Icon,i)=>(<a key={i} href="#" className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-brand-orange transition-colors"><Icon size={18}/></a>))}</div>
+          </div>
+          <div className="hidden md:block"><h4 className="font-heading text-lg mb-5 text-brand-gold">Explore</h4><ul className="space-y-3 text-sm text-white/75">{[["Home","home.html"],["About","about.html"],["Products","products.html"],["Services","services.html"],["Global Reach","global-reach.html"]].map(([n,p])=>(<li key={p}><a href={p} className="hover:text-brand-orange transition-colors">{n}</a></li>))}</ul></div>
+          <div className="hidden md:block"><h4 className="font-heading text-lg mb-5 text-brand-gold">Products</h4><ul className="space-y-3 text-sm text-white/75">{["Spices & Seasonings","Rice & Grains","Fresh Produce","Nuts & Pulses","Dry Fruits"].map((n)=>(<li key={n}><a href="products.html" className="hover:text-brand-orange transition-colors">{n}</a></li>))}</ul></div>
+          <div><h4 className="font-heading text-lg mb-5 text-brand-gold">Contact</h4><ul className="space-y-4 text-sm text-white/75"><li className="flex items-start gap-3"><MapPin size={18} className="text-brand-orange mt-0.5 shrink-0"/> Hyderabad, Telangana, India</li><li className="flex items-center gap-3"><Phone size={18} className="text-brand-orange shrink-0"/> +91 8121007155</li><li className="flex items-center gap-3"><Mail size={18} className="text-brand-orange shrink-0"/> info@tahanfoods.com</li></ul></div>
+        </div>
+        <div className="border-t border-white/10 mt-12 pt-8 flex flex-col md:flex-row justify-between gap-4 text-sm text-white/60"><p>© {new Date().getFullYear()} Tahaan Foods Private Limited. All rights reserved.</p><p>Developed by <a href="https://www.faizcodex.com" target="_blank" rel="noopener noreferrer" className="hover:text-brand-orange transition-colors">FaizCodex.com</a></p></div>
+      </div>
+    </footer>
+  );
+}
+
+function Reveal({children,delay=0,y=40,className=""}){return <motion.div className={className} initial={{opacity:0,y}} animate={{opacity:1,y:0}} transition={{duration:.8,delay,ease:[.16,1,.3,1]}}>{children}</motion.div>;}
+
+function PageHero({eyebrow,title,subtitle}){
+  return (
+    <section className="relative pt-40 pb-20 md:pt-48 md:pb-28 overflow-hidden bg-brand-cream bg-noise">
+      <div className="absolute top-20 right-10 w-72 h-72 bg-brand-orange/15 rounded-full blur-3xl"/>
+      <div className="absolute bottom-0 left-10 w-72 h-72 bg-brand-green/15 rounded-full blur-3xl"/>
+      <div className="relative max-w-5xl mx-auto px-6 text-center">
+        <motion.span initial={{opacity:0,y:20}} animate={{opacity:1,y:0}} transition={{duration:.6}} className="text-brand-orange text-sm font-semibold tracking-[0.25em] uppercase">{eyebrow}</motion.span>
+        <motion.h1 initial={{opacity:0,y:30}} animate={{opacity:1,y:0}} transition={{duration:.8,delay:.1,ease:[.16,1,.3,1]}} className="font-heading text-4xl sm:text-5xl md:text-7xl font-semibold text-brand-greenDark mt-4 leading-[1.05]">{title}</motion.h1>
+        {subtitle&&<motion.p initial={{opacity:0}} animate={{opacity:1}} transition={{duration:.8,delay:.3}} className="text-neutral-600 text-lg mt-6 max-w-2xl mx-auto leading-relaxed">{subtitle}</motion.p>}
+      </div>
+    </section>
+  );
+}
+
+function Page(){
+  const [form,setForm]=useState({name:"",email:"",company:"",message:""});
+  const [status,setStatus]=useState("idle");
+  const handleChange=(e)=>setForm({...form,[e.target.name]:e.target.value});
+  const handleSubmit=(e)=>{e.preventDefault();const text=`New enquiry from ${form.name}\nEmail: ${form.email}\nCompany: ${form.company||"-"}\n\n${form.message}`;window.open(`https://wa.me/918121007155?text=${encodeURIComponent(text)}`,"_blank");setStatus("sent");setForm({name:"",email:"",company:"",message:""});};
+  const info=[{icon:MapPin,title:"Visit Us",text:"Hyderabad, Telangana, India"},{icon:Phone,title:"Call Us",text:"+91 8121007155"},{icon:Mail,title:"Email Us",text:"info@tahanfoods.com"}];
+  return (
+    <>
+      <Navbar/>
+      <PageHero eyebrow="Contact" title="Let's build something together" subtitle="Have an enquiry or a product to source? Our team is ready to help you trade with confidence."/>
+      <section className="py-24 max-w-7xl mx-auto px-6">
+        <div className="grid lg:grid-cols-5 gap-14">
+          <Reveal className="lg:col-span-2 space-y-6">
+            {info.map((c)=>(<div key={c.title} className="flex gap-5 bg-brand-cream rounded-2xl p-6 border border-brand-sand"><div className="w-12 h-12 rounded-xl bg-brand-orange/10 flex items-center justify-center shrink-0"><c.icon className="text-brand-orange" size={22}/></div><div><h3 className="font-heading text-lg text-brand-greenDark">{c.title}</h3><p className="text-neutral-600 mt-1">{c.text}</p></div></div>))}
+            <div className="bg-brand-greenDark rounded-2xl p-8 text-white"><h3 className="font-heading text-xl mb-2">Business Hours</h3><p className="text-white/75 text-sm">Monday – Saturday</p><p className="text-white/75 text-sm">9:00 AM – 7:00 PM IST</p></div>
+          </Reveal>
+          <Reveal delay={.15} className="lg:col-span-3">
+            {status==="sent"?(
+              <motion.div initial={{opacity:0,scale:.95}} animate={{opacity:1,scale:1}} className="bg-brand-green/10 border border-brand-green/30 rounded-3xl p-12 text-center h-full flex flex-col items-center justify-center">
+                <CheckCircle2 className="text-brand-green mb-4" size={56}/>
+                <h3 className="font-heading text-2xl text-brand-greenDark mb-2">Thank you!</h3>
+                <p className="text-neutral-600">Your WhatsApp chat should have opened with your enquiry ready to send. If it didn't, message us on +91 8121007155.</p>
+                <button onClick={()=>setStatus("idle")} className="mt-6 text-brand-orange font-semibold hover:underline">Send another</button>
+              </motion.div>
+            ):(
+              <form onSubmit={handleSubmit} className="bg-white border border-brand-sand rounded-3xl p-8 md:p-10 shadow-sm space-y-6">
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div><label className="block text-sm font-semibold text-neutral-700 mb-2">Full Name</label><input required name="name" value={form.name} onChange={handleChange} className="w-full px-4 py-3 rounded-xl border border-brand-sand focus:border-brand-orange focus:ring-2 focus:ring-brand-orange/20 outline-none transition" placeholder="Your name"/></div>
+                  <div><label className="block text-sm font-semibold text-neutral-700 mb-2">Email</label><input required type="email" name="email" value={form.email} onChange={handleChange} className="w-full px-4 py-3 rounded-xl border border-brand-sand focus:border-brand-orange focus:ring-2 focus:ring-brand-orange/20 outline-none transition" placeholder="you@company.com"/></div>
+                </div>
+                <div><label className="block text-sm font-semibold text-neutral-700 mb-2">Company</label><input name="company" value={form.company} onChange={handleChange} className="w-full px-4 py-3 rounded-xl border border-brand-sand focus:border-brand-orange focus:ring-2 focus:ring-brand-orange/20 outline-none transition" placeholder="Company name"/></div>
+                <div><label className="block text-sm font-semibold text-neutral-700 mb-2">Message</label><textarea required name="message" value={form.message} onChange={handleChange} rows={5} className="w-full px-4 py-3 rounded-xl border border-brand-sand focus:border-brand-orange focus:ring-2 focus:ring-brand-orange/20 outline-none transition resize-none" placeholder="Tell us about your requirements..."/></div>
+                <button type="submit" className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-brand-orange text-white font-semibold hover:bg-brand-greenDark transition-colors duration-300">Send Enquiry <Send size={18}/></button>
+              </form>
+            )}
+          </Reveal>
+        </div>
+      </section>
+      <Footer/>
+    </>
+  );
+}
+
+createRoot(document.getElementById("root")).render(<Page/>);
+setTimeout(()=>{var l=document.getElementById('app-loader');if(l)l.classList.add('gone');},1200);
+</script>
+</body>
+</html>
