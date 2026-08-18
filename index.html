@@ -65,7 +65,7 @@ tailwind.config = {
 import React, { useState, useEffect, useRef, useMemo } from "react";
 import { createRoot } from "react-dom/client";
 import { HashRouter, Routes, Route, Link, useLocation } from "react-router-dom";
-import { motion, AnimatePresence, useScroll, useTransform, useInView, animate } from "framer-motion";
+import { motion, AnimatePresence, useInView, animate } from "framer-motion";
 import { Menu, X, Mail, Phone, MapPin, Linkedin, Instagram, Facebook, ArrowRight, Leaf, ShieldCheck, Ship, Quote, CheckCircle2, AlertCircle, Check, PackageCheck, Globe, Truck, FileCheck, Boxes, FileText, Target, Eye, Heart, Award, Handshake, Sprout, Send, ChevronDown } from "lucide-react";
 import L from "leaflet";
 
@@ -274,8 +274,7 @@ function ProductShowcase() {
   </section>;
 }
 function GlobalBand() {
-  const ref = useRef(null); const { scrollYProgress } = useScroll({ target:ref, offset:["start end","end start"] }); const y = useTransform(scrollYProgress, [0,1], [-60,60]);
-  return <section ref={ref} className="relative h-[520px] flex items-center overflow-hidden"><motion.img style={{ y, scale:1.2 }} src={GLOBAL} alt="Global shipping" className="absolute inset-0 w-full h-full object-cover" /><div className="absolute inset-0 bg-brand-greenDark/70" /><div className="relative z-10 max-w-7xl mx-auto px-6 text-center w-full"><motion.h2 initial={{opacity:0,y:40}} whileInView={{opacity:1,y:0}} viewport={{once:true}} transition={{duration:0.9,ease:[0.16,1,0.3,1]}} className="font-heading text-4xl md:text-6xl font-semibold text-white leading-tight max-w-4xl mx-auto">From local farms to <span className="text-brand-gold italic">global tables</span></motion.h2><motion.p initial={{opacity:0}} whileInView={{opacity:1}} viewport={{once:true}} transition={{duration:0.9,delay:0.2}} className="text-white/85 text-lg mt-6 max-w-2xl mx-auto">Our robust logistics network spans continents, ensuring your goods arrive fresh, on time, every time.</motion.p><Link to="/global-reach" className="inline-flex items-center gap-2 mt-9 px-8 py-4 rounded-full bg-brand-orange text-white font-semibold hover:bg-white hover:text-brand-greenDark transition-all duration-300">Our Global Reach <ArrowRight size={18} /></Link></div></section>;
+  return <section className="relative h-[520px] flex items-center overflow-hidden"><img src={GLOBAL} alt="Global shipping" className="absolute inset-0 w-full h-full object-cover" /><div className="absolute inset-0 bg-brand-greenDark/70" /><div className="relative z-10 max-w-7xl mx-auto px-6 text-center w-full"><motion.h2 initial={{opacity:0,y:40}} animate={{opacity:1,y:0}} transition={{duration:0.9,ease:[0.16,1,0.3,1]}} className="font-heading text-4xl md:text-6xl font-semibold text-white leading-tight max-w-4xl mx-auto">From local farms to <span className="text-brand-gold italic">global tables</span></motion.h2><motion.p initial={{opacity:0}} animate={{opacity:1}} transition={{duration:0.9,delay:0.2}} className="text-white/85 text-lg mt-6 max-w-2xl mx-auto">Our robust logistics network spans continents, ensuring your goods arrive fresh, on time, every time.</motion.p><Link to="/global-reach" className="inline-flex items-center gap-2 mt-9 px-8 py-4 rounded-full bg-brand-orange text-white font-semibold hover:bg-white hover:text-brand-greenDark transition-all duration-300">Our Global Reach <ArrowRight size={18} /></Link></div></section>;
 }
 function FounderNote() {
   return <section className="py-24 md:py-32 max-w-7xl mx-auto px-6"><div className="grid lg:grid-cols-5 gap-14 items-center">
@@ -353,8 +352,16 @@ function ScrollToTop() { const loc = useLocation(); useEffect(()=>window.scrollT
 function Layout({ children }) { return <div className="min-h-screen bg-white"><Navbar /><main>{children}</main><Footer /></div>; }
 function NotFound() { return <div className="min-h-screen flex items-center justify-center bg-brand-cream"><div className="text-center"><h1 className="font-heading text-6xl text-brand-greenDark">404</h1><p className="text-neutral-600 mt-4">This page doesn't exist.</p><Link to="/" className="inline-flex mt-6 px-6 py-3 rounded-full bg-brand-orange text-white font-semibold">Back home</Link></div></div>; }
 
+class ErrorBoundary extends React.Component {
+  constructor(props){ super(props); this.state={hasError:false}; }
+  static getDerivedStateFromError(){ return {hasError:true}; }
+  componentDidCatch(e){ console.error("Page error:", e); }
+  render(){ if(this.state.hasError){ return <div style={{minHeight:"80vh",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:"24px",textAlign:"center",fontFamily:"Manrope,sans-serif"}}><h2 style={{fontFamily:"Fraunces,serif",fontSize:"28px",color:"#0F5228",marginBottom:"12px"}}>This page didn't load.</h2><p style={{color:"#555",marginBottom:"24px"}}>Tap below to go back home.</p><button onClick={()=>{this.setState({hasError:false}); window.location.hash="#/";}} style={{padding:"12px 24px",borderRadius:"999px",background:"#E8720C",color:"#fff",border:"none",fontWeight:600,cursor:"pointer"}}>Back to Home</button></div>; } return this.props.children; }
+}
+
 function App() {
   return <HashRouter><ScrollToTop /><Layout>
+    <ErrorBoundary>
     <Routes>
       <Route path="/" element={<Home />} />
       <Route path="/about" element={<About />} />
@@ -364,6 +371,7 @@ function App() {
       <Route path="/contact" element={<Contact />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
+    </ErrorBoundary>
   </Layout></HashRouter>;
 }
 
