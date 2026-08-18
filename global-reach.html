@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Global Reach — Tahaan Foods</title>
+<meta name="description" content="Trusted across continents — trace the sea routes we sail from southern India to ports across six continents, serving 25+ nations."/>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='48' fill='%230F5228'/><text x='50' y='62' font-size='52' text-anchor='middle' fill='%23E6A817' font-family='serif'>T</text></svg>"/>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config={theme:{extend:{colors:{brand:{orange:'#E8720C',gold:'#E6A817',green:'#1B7A3D',greenDark:'#0F5228',cream:'#FCF6E9',sand:'#F7E9C6'}},fontFamily:{heading:['Fraunces','serif'],body:['Manrope','sans-serif']}}}}
+</script>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+body{font-family:'Manrope',sans-serif;}
+::selection{background:#E8720C;color:#fff;}
+::-webkit-scrollbar{width:10px}::-webkit-scrollbar-track{background:#fff}::-webkit-scrollbar-thumb{background:#E6A817;border-radius:10px}
+.bg-noise{background-image:radial-gradient(circle at 1px 1px,rgba(0,0,0,.04) 1px,transparent 0);background-size:22px 22px}
+#app-loader{position:fixed;inset:0;background:#0F5228;display:flex;align-items:center;justify-content:center;z-index:9999;flex-direction:column;gap:8px;transition:opacity .5s}
+#app-loader.gone{opacity:0;pointer-events:none}
+.loader-logo{font-family:'Fraunces',serif;color:#fff;font-size:1.7rem;letter-spacing:.05em;animation:lp 1.6s ease-in-out infinite}
+.loader-sub{color:#E6A817;font-size:.7rem;letter-spacing:.3em;text-transform:uppercase}
+@keyframes lp{0%,100%{opacity:.55}50%{opacity:1}}
+</style>
+<script type="importmap">
+{"imports":{"react":"https://esm.sh/react@18.2.0","react-dom/client":"https://esm.sh/react-dom@18.2.0/client","framer-motion":"https://esm.sh/framer-motion@11.16.4?deps=react@18.2.0","lucide-react":"https://esm.sh/lucide-react@0.475.0?deps=react@18.2.0"}}
+</script>
+</head>
+<body>
+<div id="app-loader"><div class="loader-logo">Tahaan Foods</div><div class="loader-sub">Private Limited</div></div>
+<div id="root"></div>
+<script type="text/babel" data-type="module" data-presets="react">
+import React,{useState,useEffect,useRef} from "react";
+import {createRoot} from "react-dom/client";
+import {motion,AnimatePresence} from "framer-motion";
+import {ArrowRight,Menu,X,Mail,Phone,MapPin,Linkedin,Instagram,Facebook} from "lucide-react";
+
+const LOGO="https://media.base44.com/images/public/6a4e5de5f7403fbafbc3fde5/9491c35a4_TAHAAN_FOODS_PRIVATE_LIMITED__1_-removebg-preview.png";
+const navLinks=[{name:"Home",href:"home.html"},{name:"About",href:"about.html"},{name:"Products",href:"products.html"},{name:"Services",href:"services.html"},{name:"Global Reach",href:"global-reach.html"},{name:"Contact",href:"contact.html"}];
+const cur=(window.location.pathname.split("/").pop()||"home.html").toLowerCase();
+
+function Navbar(){
+  const [scrolled,setScrolled]=useState(false);
+  const [open,setOpen]=useState(false);
+  useEffect(()=>{const f=()=>setScrolled(window.scrollY>30);window.addEventListener("scroll",f);return()=>window.removeEventListener("scroll",f);},[]);
+  return (
+    <motion.header initial={{y:-80}} animate={{y:0}} transition={{duration:.7,ease:[.16,1,.3,1]}} className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${scrolled?"bg-white/85 backdrop-blur-xl shadow-[0_8px_40px_rgba(0,0,0,0.06)] py-3":"bg-transparent py-5"}`}>
+      <nav className="max-w-7xl mx-auto px-6 flex items-center justify-between">
+        <a href="home.html" className="flex items-center gap-3 group">
+          <img src={LOGO} alt="Tahaan Foods logo" className="w-11 h-11 rounded-full object-cover ring-2 ring-brand-gold/40 transition-transform group-hover:rotate-12 duration-500"/>
+          <div className="leading-tight"><span className="block font-heading font-semibold text-lg text-brand-greenDark">Tahaan Foods</span><span className="block text-[10px] tracking-[0.25em] text-brand-orange uppercase">Private Limited</span></div>
+        </a>
+        <div className="hidden lg:flex items-center gap-8">
+          {navLinks.map((l)=>(<a key={l.href} href={l.href} className="relative text-sm font-medium text-neutral-700 hover:text-brand-orange transition-colors group">{l.name}<span className={`absolute -bottom-1.5 left-0 h-0.5 bg-brand-orange transition-all duration-300 ${l.href.toLowerCase()===cur?"w-full":"w-0 group-hover:w-full"}`}/></a>))}
+        </div>
+        <a href="contact.html" className="hidden lg:inline-flex items-center px-6 py-2.5 rounded-full bg-brand-greenDark text-white text-sm font-semibold hover:bg-brand-orange transition-colors duration-300">Get a Quote</a>
+        <button onClick={()=>setOpen(!open)} className="lg:hidden text-brand-greenDark p-2">{open?<X size={26}/>:<Menu size={26}/>}</button>
+      </nav>
+      <AnimatePresence>{open&&(<motion.div initial={{opacity:0,height:0}} animate={{opacity:1,height:"auto"}} exit={{opacity:0,height:0}} className="lg:hidden bg-white/95 backdrop-blur-xl overflow-hidden"><div className="px-6 py-6 flex flex-col gap-4">{navLinks.map((l)=>(<a key={l.href} href={l.href} className="text-base font-medium text-neutral-800 hover:text-brand-orange">{l.name}</a>))}<a href="contact.html" className="mt-2 inline-flex justify-center px-6 py-3 rounded-full bg-brand-greenDark text-white font-semibold">Get a Quote</a></div></motion.div>)}</AnimatePresence>
+    </motion.header>
+  );
+}
+
+function Footer(){
+  return (
+    <footer className="bg-brand-greenDark text-white relative overflow-hidden">
+      <div className="absolute -top-24 -right-24 w-96 h-96 rounded-full bg-brand-orange/20 blur-3xl"/>
+      <div className="absolute -bottom-24 -left-24 w-96 h-96 rounded-full bg-brand-gold/20 blur-3xl"/>
+      <div className="relative max-w-7xl mx-auto px-6 py-14">
+        <div className="grid md:grid-cols-4 gap-10">
+          <div className="md:col-span-1">
+            <div className="flex items-center gap-3 mb-4"><img src={LOGO} alt="Tahaan Foods" className="w-12 h-12 rounded-full object-cover ring-2 ring-brand-gold/40"/><span className="font-heading font-semibold text-xl">Tahaan Foods</span></div>
+            <p className="text-white/70 text-sm leading-relaxed">Bridging global markets with premium agricultural products through trusted import &amp; export excellence.</p>
+            <div className="flex gap-3 mt-5">{[Linkedin,Instagram,Facebook].map((Icon,i)=>(<a key={i} href="#" className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-brand-orange transition-colors"><Icon size={18}/></a>))}</div>
+          </div>
+          <div className="hidden md:block"><h4 className="font-heading text-lg mb-5 text-brand-gold">Explore</h4><ul className="space-y-3 text-sm text-white/75">{[["Home","home.html"],["About","about.html"],["Products","products.html"],["Services","services.html"],["Global Reach","global-reach.html"]].map(([n,p])=>(<li key={p}><a href={p} className="hover:text-brand-orange transition-colors">{n}</a></li>))}</ul></div>
+          <div className="hidden md:block"><h4 className="font-heading text-lg mb-5 text-brand-gold">Products</h4><ul className="space-y-3 text-sm text-white/75">{["Spices & Seasonings","Rice & Grains","Fresh Produce","Nuts & Pulses","Dry Fruits"].map((n)=>(<li key={n}><a href="products.html" className="hover:text-brand-orange transition-colors">{n}</a></li>))}</ul></div>
+          <div><h4 className="font-heading text-lg mb-5 text-brand-gold">Contact</h4><ul className="space-y-4 text-sm text-white/75"><li className="flex items-start gap-3"><MapPin size={18} className="text-brand-orange mt-0.5 shrink-0"/> Hyderabad, Telangana, India</li><li className="flex items-center gap-3"><Phone size={18} className="text-brand-orange shrink-0"/> +91 8121007155</li><li className="flex items-center gap-3"><Mail size={18} className="text-brand-orange shrink-0"/> info@tahanfoods.com</li></ul></div>
+        </div>
+        <div className="border-t border-white/10 mt-12 pt-8 flex flex-col md:flex-row justify-between gap-4 text-sm text-white/60"><p>© {new Date().getFullYear()} Tahaan Foods Private Limited. All rights reserved.</p><p>Developed by <a href="https://www.faizcodex.com" target="_blank" rel="noopener noreferrer" className="hover:text-brand-orange transition-colors">FaizCodex.com</a></p></div>
+      </div>
+    </footer>
+  );
+}
+
+function Reveal({children,delay=0,y=40,className=""}){return <motion.div className={className} initial={{opacity:0,y}} animate={{opacity:1,y:0}} transition={{duration:.8,delay,ease:[.16,1,.3,1]}}>{children}</motion.div>;}
+
+function PageHero({eyebrow,title,subtitle}){
+  return (
+    <section className="relative pt-40 pb-20 md:pt-48 md:pb-28 overflow-hidden bg-brand-cream bg-noise">
+      <div className="absolute top-20 right-10 w-72 h-72 bg-brand-orange/15 rounded-full blur-3xl"/>
+      <div className="absolute bottom-0 left-10 w-72 h-72 bg-brand-green/15 rounded-full blur-3xl"/>
+      <div className="relative max-w-5xl mx-auto px-6 text-center">
+        <motion.span initial={{opacity:0,y:20}} animate={{opacity:1,y:0}} transition={{duration:.6}} className="text-brand-orange text-sm font-semibold tracking-[0.25em] uppercase">{eyebrow}</motion.span>
+        <motion.h1 initial={{opacity:0,y:30}} animate={{opacity:1,y:0}} transition={{duration:.8,delay:.1,ease:[.16,1,.3,1]}} className="font-heading text-4xl sm:text-5xl md:text-7xl font-semibold text-brand-greenDark mt-4 leading-[1.05]">{title}</motion.h1>
+        {subtitle&&<motion.p initial={{opacity:0}} animate={{opacity:1}} transition={{duration:.8,delay:.3}} className="text-neutral-600 text-lg mt-6 max-w-2xl mx-auto leading-relaxed">{subtitle}</motion.p>}
+      </div>
+    </section>
+  );
+}
+
+const HOME=[13.09,80.29];
+const countries=[
+  {name:"UAE",flag:"🇦🇪",port:"Jebel Ali, Dubai",coord:[25.01,55.07]},{name:"Saudi Arabia",flag:"🇸🇦",port:"Jeddah",coord:[21.54,39.19]},{name:"Qatar",flag:"🇶🇦",port:"Doha",coord:[25.29,51.53]},{name:"Oman",flag:"🇴🇲",port:"Salalah",coord:[17.02,54.09]},
+  {name:"Singapore",flag:"🇸🇬",port:"Singapore",coord:[1.26,103.83]},{name:"Malaysia",flag:"🇲🇾",port:"Port Klang",coord:[3.04,101.39]},{name:"Japan",flag:"🇯🇵",port:"Tokyo",coord:[35.68,139.69]},{name:"Vietnam",flag:"🇻🇳",port:"Ho Chi Minh City",coord:[10.77,106.7]},
+  {name:"United Kingdom",flag:"🇬🇧",port:"Felixstowe",coord:[51.96,1.35]},{name:"Germany",flag:"🇩🇪",port:"Hamburg",coord:[53.55,9.99]},{name:"Netherlands",flag:"🇳🇱",port:"Rotterdam",coord:[51.95,4.14]},{name:"France",flag:"🇫🇷",port:"Le Havre",coord:[49.49,0.13]},
+  {name:"Kenya",flag:"🇰🇪",port:"Mombasa",coord:[-4.04,39.66]},{name:"Nigeria",flag:"🇳🇬",port:"Lagos",coord:[6.45,3.4]},{name:"South Africa",flag:"🇿🇦",port:"Durban",coord:[-29.86,31.03]},{name:"Egypt",flag:"🇪🇬",port:"Alexandria",coord:[31.2,29.92]},
+  {name:"United States",flag:"🇺🇸",port:"New York",coord:[40.71,-74.01]},{name:"Canada",flag:"🇨🇦",port:"Vancouver",coord:[49.28,-123.12]},{name:"Mexico",flag:"🇲🇽",port:"Manzanillo",coord:[19.05,-104.32]},
+  {name:"Australia",flag:"🇦🇺",port:"Sydney",coord:[-33.87,151.21]},{name:"New Zealand",flag:"🇳🇿",port:"Auckland",coord:[-36.85,174.76]}
+];
+function arc(from,to,bend=.25){const [lat1,lng1]=from,[lat2,lng2]=to;const mx=(lat1+lat2)/2,my=(lng1+lng2)/2;const dx=lat2-lat1,dy=lng2-lng1;const d=Math.hypot(dx,dy)||1;const cx=mx+(-dy/d)*d*bend;const cy=my+(dx/d)*d*bend;const pts=[];for(let t=0;t<=1;t+=1/30){const lat=(1-t)*(1-t)*lat1+2*(1-t)*t*cx+t*t*lat2;const lng=(1-t)*(1-t)*lng1+2*(1-t)*t*cy+t*t*lng2;pts.push([lat,lng]);}return pts;}
+
+function WorldMap(){
+  const ref=useRef(null);
+  const mapRef=useRef(null);
+  const lineRef=useRef(null);
+  const [active,setActive]=useState(null);
+  useEffect(()=>{
+    const L=window.L;
+    if(!L||!ref.current)return;
+    const map=L.map(ref.current,{center:[20,45],zoom:2,minZoom:2,maxZoom:5,scrollWheelZoom:false,worldCopyJump:true});
+    mapRef.current=map;
+    L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",{attribution:"© OpenStreetMap © CARTO"}).addTo(map);
+    L.marker(HOME,{icon:L.divIcon({className:"",html:`<div style="display:flex;flex-direction:column;align-items:center"><div style="width:16px;height:16px;border-radius:50%;background:#E6A817;border:3px solid #0F5228;box-shadow:0 0 0 5px rgba(230,168,23,.3)"></div><span style="margin-top:3px;font-size:10px;font-weight:700;color:#0F5228;background:#fff;padding:1px 6px;border-radius:6px;white-space:nowrap">India</span></div>`,iconSize:[20,24],iconAnchor:[10,10]})}).addTo(map);
+    countries.forEach((c,idx)=>{
+      const m=L.marker(c.coord,{icon:L.divIcon({className:"",html:`<div style="display:flex;flex-direction:column;align-items:center;cursor:pointer;transition:transform .2s"><div style="font-size:22px;filter:drop-shadow(0 1px 2px rgba(0,0,0,.5))">${c.flag}</div><span style="margin-top:1px;font-size:9px;font-weight:600;color:#fff;background:rgba(15,82,40,.82);padding:1px 5px;border-radius:5px;white-space:nowrap">${c.name}</span></div>`,iconSize:[44,40],iconAnchor:[22,20]})}).addTo(map);
+      m.on("mouseover",()=>setActive(idx));
+      m.on("mouseout",()=>setActive(null));
+      m.on("click",()=>setActive(active=>active===idx?null:idx));
+    });
+    map.fitBounds([HOME,...countries.map(c=>c.coord)],{padding:[50,50]});
+    return ()=>{map.remove();mapRef.current=null;};
+  },[]);
+  useEffect(()=>{
+    const map=mapRef.current;if(!map)return;const L=window.L;
+    if(lineRef.current){map.removeLayer(lineRef.current);lineRef.current=null;}
+    if(active!==null){lineRef.current=L.polyline(arc(HOME,countries[active].coord,.25),{color:"#E8720C",weight:3,opacity:.95,dashArray:"8 10"}).addTo(map);}
+  },[active]);
+  return (
+    <div className="relative rounded-[2rem] overflow-hidden shadow-2xl border border-brand-sand">
+      <div ref={ref} style={{height:"70vh",minHeight:480,background:"#0a1f14"}}/>
+      <div className="absolute top-4 left-4 z-[1000] bg-white/92 backdrop-blur rounded-xl px-4 py-3 shadow-lg max-w-[280px] pointer-events-none">
+        <p className="text-xs text-neutral-600 leading-relaxed">{active!==null?(<>Sea route from <strong className="text-brand-greenDark">Chennai, India</strong> → <strong className="text-brand-orange">{countries[active].port}, {countries[active].name}</strong></>):(<>Hover any country to trace its <strong className="text-brand-orange">sea route</strong> from southern India.</>)}</p>
+      </div>
+    </div>
+  );
+}
+
+function FlagsCarousel(){
+  const flags=[{flag:"🇦🇪",name:"UAE"},{flag:"🇸🇦",name:"Saudi Arabia"},{flag:"🇶🇦",name:"Qatar"},{flag:"🇴🇲",name:"Oman"},{flag:"🇸🇬",name:"Singapore"},{flag:"🇲🇾",name:"Malaysia"},{flag:"🇯🇵",name:"Japan"},{flag:"🇻🇳",name:"Vietnam"},{flag:"🇬🇧",name:"United Kingdom"},{flag:"🇩🇪",name:"Germany"},{flag:"🇳🇱",name:"Netherlands"},{flag:"🇫🇷",name:"France"},{flag:"🇰🇪",name:"Kenya"},{flag:"🇳🇬",name:"Nigeria"},{flag:"🇿🇦",name:"South Africa"},{flag:"🇪🇬",name:"Egypt"},{flag:"🇺🇸",name:"United States"},{flag:"🇨🇦",name:"Canada"},{flag:"🇲🇽",name:"Mexico"},{flag:"🇦🇺",name:"Australia"},{flag:"🇳🇿",name:"New Zealand"}];
+  const loop=[...flags,...flags];
+  return (
+    <div className="overflow-hidden">
+      <motion.div className="flex gap-5 w-max" animate={{x:["0%","-50%"]}} transition={{duration:32,repeat:Infinity,ease:"linear"}}>
+        {loop.map((f,i)=>(<div key={i} className="flex items-center gap-3 bg-white border border-brand-sand rounded-2xl px-6 py-3 shrink-0 shadow-sm"><span className="text-3xl leading-none">{f.flag}</span><span className="font-heading text-lg text-brand-greenDark">{f.name}</span></div>))}
+      </motion.div>
+    </div>
+  );
+}
+
+function Page(){
+  const regions=[{name:"Middle East",text:"A cornerstone of our trade, the Middle East relies on India for spices, rice and fresh produce. We move regular shipments into the UAE, Saudi Arabia, Qatar and Oman through established sea routes from southern India."},{name:"Asia Pacific",text:"From Singapore's busy hub to markets in Malaysia, Japan and Vietnam, we serve the growing demand for Indian agri products across South-East and East Asia with dependable lead times."},{name:"Europe",text:"Discerning European buyers in the UK, Germany, the Netherlands and France trust us for consistent quality and reliable documentation-free movement, shipment after shipment."},{name:"Africa",text:"We supply markets in Kenya, Nigeria, South Africa and Egypt, building trade corridors that support both staple and specialised agri requirements across the continent."},{name:"North America",text:"From the US East Coast to Canada and Mexico, we deliver Indian agri products to buyers who value traceability and on-time delivery across the Pacific and Atlantic."},{name:"Oceania",text:"Australia and New Zealand round out our reach, with shipments that meet the strict expectations of these quality-conscious markets."}];
+  return (
+    <>
+      <Navbar/>
+      <PageHero eyebrow="Global Reach" title="Trusted across continents" subtitle="A far-reaching network that delivers quality wherever it's needed — trace the sea routes we sail, from southern India to ports across six continents."/>
+      <section className="py-16 max-w-7xl mx-auto px-6">
+        <Reveal className="text-center mb-10"><span className="text-brand-orange text-sm font-semibold tracking-[0.2em] uppercase">Our Network</span><h2 className="font-heading text-4xl md:text-5xl font-semibold text-brand-greenDark mt-4">Trace our sea routes</h2><p className="text-neutral-600 mt-4 max-w-2xl mx-auto">Hover over any country to see the sea route our vessels take from Chennai, on India's southern coast, to that destination port.</p></Reveal>
+        <Reveal delay={.1}><WorldMap/></Reveal>
+      </section>
+      <section className="py-10 bg-brand-cream bg-noise">
+        <div className="max-w-7xl mx-auto px-6">
+          <Reveal className="text-center mb-8"><span className="text-brand-orange text-sm font-semibold tracking-[0.2em] uppercase">Countries We Serve</span><h2 className="font-heading text-3xl font-semibold text-brand-greenDark mt-3">25+ nations and counting</h2></Reveal>
+          <FlagsCarousel/>
+        </div>
+      </section>
+      <section className="py-20 max-w-4xl mx-auto px-6">
+        <Reveal className="mb-12"><h2 className="font-heading text-3xl md:text-4xl font-semibold text-brand-greenDark mb-6">Where we operate</h2><p className="text-neutral-600 text-lg leading-relaxed">Tahaan Foods serves partners across six continents, with a network built over years of consistent, dependable trade. Our reach is not measured in numbers alone — it is measured in the relationships we've earned at ports, with growers and with buyers in every region we serve. Below is a sense of where we are active today, and we are expanding steadily into new markets each year.</p></Reveal>
+        <div className="space-y-10">
+          {regions.map((r,i)=>(<Reveal key={r.name} delay={i*.05}><div><h3 className="font-heading text-2xl text-brand-greenDark mb-2">{r.name}</h3><p className="text-neutral-600 leading-relaxed">{r.text}</p></div></Reveal>))}
+        </div>
+      </section>
+      <section className="py-16 max-w-4xl mx-auto px-6 text-center">
+        <Reveal>
+          <h2 className="font-heading text-3xl md:text-4xl font-semibold text-brand-greenDark mb-5">Want to ship to a new market?</h2>
+          <p className="text-neutral-600 text-lg leading-relaxed">Even if your destination isn't listed, our sourcing and logistics network can likely reach it. Tell us where you need your goods, and we'll map the route.</p>
+          <a href="contact.html" className="inline-flex items-center gap-2 mt-8 px-8 py-4 rounded-full bg-brand-orange text-white font-semibold hover:bg-brand-greenDark transition-colors duration-300">Plan your shipment <ArrowRight size={18}/></a>
+        </Reveal>
+      </section>
+      <Footer/>
+    </>
+  );
+}
+
+createRoot(document.getElementById("root")).render(<Page/>);
+setTimeout(()=>{var l=document.getElementById('app-loader');if(l)l.classList.add('gone');},1200);
+</script>
+</body>
+</html>
